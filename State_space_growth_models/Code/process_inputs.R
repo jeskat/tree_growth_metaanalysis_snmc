@@ -4,21 +4,23 @@
 
 library(stringi)
 library(zoo)
-source(here::here('config.R'))
+library(dplyr)
+library(tidyr)
+source(here::here('State_space_growth_models/Code/ssm_config.R'))
 
 ## This script requires that `site` and `pft` be defined. If calling from 
 ## run_ssm.R, these will be passed in from the shell script.
 
 ## Directory of input data files for this site. 
 ## The site directory must include the following files:
-## tree_level_df.csv, plot_level_df.csv, obs_matrix.csv, year_matrix.csv, 
-## size_init.csv, and cwd_mean.csv
+## tree_attrs.csv, unit_attrs.csv, dbh_tree_obs.csv, year_tree_obs.csv, 
+## pft_df.csv and cwd_mean.csv
 
 ## Routes us to the correct input data file based on site alias
-indir <- file.path('Input_data',indir_names[[site]])
+indir <- file.path('State_space_growth_models/','Input_data',indir_names[[site]])
 
 ## Full tree list for specified site
-allData <- read.table(here::here(indir, "tree_level_df.csv"), header = TRUE, sep = 
+allData <- read.table(here::here(indir, "tree_attrs.csv"), header = TRUE, sep = 
                         ",",row.names=1)
 
 ## Subset full tree list for trees of specified PFT
@@ -30,8 +32,8 @@ if(indir_names[[site]]=='WLakeTahoe' & pft == 'yellow_pine'){
   treeData <- treeData[treeData$PlotID != 'MCK 13-3 T', ]
 }
 
-## Plot-level attributes
-allPlots <- read.csv(here::here(indir, 'plot_level_df.csv'))
+## Unit-level attributes
+allPlots <- read.csv(here::here(indir, 'unit_attrs.csv'))
 
 ## reorder rows by plotID
 allPlots <- allPlots[order(allPlots$PlotID),]
@@ -51,7 +53,7 @@ plotData$fTreatment <- relevel(plotData$fTreatment, 'None')
 
 
 ## Load DBH observations for all trees and then subset to the desired pft
-obs_all <- read.table(here::here(indir, 'obs_matrix.csv'), header = TRUE, 
+obs_all <- read.table(here::here(indir, 'dbh_tree_obs.csv'), header = TRUE, 
                       sep = ',', row.names = 1)
 obs_pft <- obs_all[row.names(treeData),]
 
@@ -69,12 +71,58 @@ obs_ln_stdv <- sd(as.matrix(obs_ln), na.rm = TRUE)
 
 
 ## Load years corresponding to each dbh observation, and subset to desired pft
-year_obs_all <- read.table(here::here(indir, 'year_matrix.csv'), header=TRUE, 
+year_obs_all <- read.table(here::here(indir, 'year_tree_obs.csv'), header=TRUE, 
                            sep = ',', row.names = 1)
 year_obs <- year_obs_all[row.names(treeData),]
 
-## Read in linearly interpolated DBHs
-sizes_interp_all <- read.csv(here::here(indir,'size_init.csv'),row.names = 1)
+### Get initial DBH values for each tree and each year
+## Read full dataframe with inventory years
+pft_df <- read.table(here::here(indir, "pft_df.csv"), header = TRUE, sep = 
+                       ",",row.names=1)
+
+## Determine the full range of years and the first year of the study
+# The first_yr should be the minimum 'Year' across the entire study.
+first_yr <- min(pft_df$Year)
+
+# 2. Create the full time series for every tree and calculate the Timeseries_Year
+size_init <- pft_df %>%
+  # For each tree (TreeID)...
+  group_by(TreeID) %>%
+  # ...generate a complete sequence of years from min year to max year for that tree
+  tidyr::complete(Year = seq(min(Year), max(Year), by = 1)) %>%
+  ungroup() %>%
+  # Calculate the Timeseries_Year column (1, 2, 3, ...)
+  mutate(
+    Timeseries_Year = Year - first_yr + 1
+  ) %>%
+  # Select and arrange the columns
+  select(TreeID, Year, Timeseries_Year, DBH)
+
+# 3. Linearly Interpolate Missing DBH Values
+# The linear interpolation in R is handled by the na.approx function from the 'zoo' package
+size_init <- size_init %>%
+  group_by(TreeID) %>%
+  # Interpolate the missing DBH values (NA) within each tree's group
+  # na.approx() performs linear interpolation
+  mutate(
+    DBH = na.approx(DBH, na.rm = FALSE)
+  ) %>%
+  ungroup()
+
+# 4. Pivot the Data Table to  wide format
+# The output is a data frame where each row is a tree and columns are Timeseries_Year
+sizes_interp_all <- size_init %>%
+  # Use pivot_wider to convert from long to wide format
+  # The names_from column becomes the new column headers
+  # The values_from column provides the values for the new cells
+  pivot_wider(
+    id_cols = TreeID,
+    names_from = Timeseries_Year,
+    values_from = DBH
+  ) %>%
+  # Ensure the Timeseries_Year columns are ordered numerically, though pivot_wider often handles this.
+  arrange(TreeID) %>%
+  tibble::column_to_rownames(var = "TreeID")
 
 ## Subset to the desired PFT
 sizes_interp_pft <- sizes_interp_all[row.names(treeData),]
