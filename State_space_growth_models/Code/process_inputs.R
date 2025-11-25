@@ -161,7 +161,7 @@ for(i in 1:nTree){
 }
 
 ## Load CWD data and subset for PFT
-cwd <- read.table(here::here(indir, "cwd_mean.csv"), header=TRUE, 
+cwd <- read.table(here::here(indir, "cwd_tree_year.csv"), header=TRUE, 
                   sep = ',', row.names=1)
 cwd_pft <- cwd[row.names(treeData),]
 
