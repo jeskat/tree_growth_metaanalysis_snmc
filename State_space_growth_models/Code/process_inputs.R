@@ -21,7 +21,7 @@ indir <- file.path('State_space_growth_models/','Input_data',indir_names[[site]]
 
 ## Full tree list for specified site
 allData <- read.table(here::here(indir, "tree_attrs.csv"), header = TRUE, sep = 
-                        ",",row.names=1)
+                        ",",row.names='TreeID')
 
 ## Subset full tree list for trees of specified PFT
 treeData <- allData[allData$PFT == pft,]
@@ -54,7 +54,7 @@ plotData$fTreatment <- relevel(plotData$fTreatment, 'None')
 
 ## Load DBH observations for all trees and then subset to the desired pft
 obs_all <- read.table(here::here(indir, 'dbh_tree_obs.csv'), header = TRUE, 
-                      sep = ',', row.names = 1)
+                      sep = ',', row.names = 'TreeID')
 obs_pft <- obs_all[row.names(treeData),]
 
 ## Get the constants needed for scaling and centering transformed DBH values
@@ -72,57 +72,64 @@ obs_ln_stdv <- sd(as.matrix(obs_ln), na.rm = TRUE)
 
 ## Load years corresponding to each dbh observation, and subset to desired pft
 year_obs_all <- read.table(here::here(indir, 'year_tree_obs.csv'), header=TRUE, 
-                           sep = ',', row.names = 1)
+                           sep = ',', row.names = 'TreeID')
 year_obs <- year_obs_all[row.names(treeData),]
 
 ### Get initial DBH values for each tree and each year
-## Read full dataframe with inventory years
-pft_df <- read.table(here::here(indir, "pft_df.csv"), header = TRUE, sep = 
-                       ",",row.names=1)
-
-## Determine the full range of years and the first year of the study
-# The first_yr should be the minimum 'Year' across the entire study.
-first_yr <- min(pft_df$Year)
-
-# 2. Create the full time series for every tree and calculate the Timeseries_Year
-size_init <- pft_df %>%
-  # For each tree (TreeID)...
-  group_by(TreeID) %>%
-  # ...generate a complete sequence of years from min year to max year for that tree
-  tidyr::complete(Year = seq(min(Year), max(Year), by = 1)) %>%
-  ungroup() %>%
-  # Calculate the Timeseries_Year column (1, 2, 3, ...)
-  mutate(
-    Timeseries_Year = Year - first_yr + 1
-  ) %>%
-  # Select and arrange the columns
-  select(TreeID, Year, Timeseries_Year, DBH)
-
-# 3. Linearly Interpolate Missing DBH Values
-# The linear interpolation in R is handled by the na.approx function from the 'zoo' package
-size_init <- size_init %>%
-  group_by(TreeID) %>%
-  # Interpolate the missing DBH values (NA) within each tree's group
-  # na.approx() performs linear interpolation
-  mutate(
-    DBH = na.approx(DBH, na.rm = FALSE)
-  ) %>%
-  ungroup()
-
-# 4. Pivot the Data Table to  wide format
-# The output is a data frame where each row is a tree and columns are Timeseries_Year
-sizes_interp_all <- size_init %>%
-  # Use pivot_wider to convert from long to wide format
-  # The names_from column becomes the new column headers
-  # The values_from column provides the values for the new cells
-  pivot_wider(
-    id_cols = TreeID,
-    names_from = Timeseries_Year,
-    values_from = DBH
-  ) %>%
-  # Ensure the Timeseries_Year columns are ordered numerically, though pivot_wider often handles this.
-  arrange(TreeID) %>%
-  tibble::column_to_rownames(var = "TreeID")
+## If the initial DBH values have already been created, use them.
+if(file.exists(here::here(indir, 'initDBH_tree_year.csv'))){
+  sizes_interp_all <- read.table(here::here(indir, 'initDBH_tree_year.csv'), header=TRUE, 
+                                 sep = ',', row.names = 'TreeID')
+}else{
+  ## Otherwise, create initial DBH values from the processed inventory data.
+  ## Read full dataframe with inventory years
+  pft_df <- read.table(here::here(indir, "pft_df.csv"), header = TRUE, sep = 
+                         ",")
+  
+  ## Determine the full range of years and the first year of the study
+  # The first_yr should be the minimum 'Year' across the entire study.
+  first_yr <- min(pft_df$Year)
+  
+  # 2. Create the full time series for every tree and calculate the Timeseries_Year
+  size_init <- pft_df %>%
+    # For each tree (TreeID)...
+    group_by(TreeID) %>%
+    # ...generate a complete sequence of years from min year to max year for that tree
+    tidyr::complete(Year = seq(min(Year), max(Year), by = 1)) %>%
+    ungroup() %>%
+    # Calculate the Timeseries_Year column (1, 2, 3, ...)
+    mutate(
+      Timeseries_Year = Year - first_yr + 1
+    ) %>%
+    # Select and arrange the columns
+    select(TreeID, Year, Timeseries_Year, DBH)
+  
+  # 3. Linearly Interpolate Missing DBH Values
+  # The linear interpolation in R is handled by the na.approx function from the 'zoo' package
+  size_init <- size_init %>%
+    group_by(TreeID) %>%
+    # Interpolate the missing DBH values (NA) within each tree's group
+    # na.approx() performs linear interpolation
+    mutate(
+      DBH = na.approx(DBH, na.rm = FALSE)
+    ) %>%
+    ungroup()
+  
+  # 4. Pivot the Data Table to  wide format
+  # The output is a data frame where each row is a tree and columns are Timeseries_Year
+  sizes_interp_all <- size_init %>%
+    # Use pivot_wider to convert from long to wide format
+    # The names_from column becomes the new column headers
+    # The values_from column provides the values for the new cells
+    pivot_wider(
+      id_cols = TreeID,
+      names_from = Timeseries_Year,
+      values_from = DBH
+    ) %>%
+    # Ensure the Timeseries_Year columns are ordered numerically, though pivot_wider often handles this.
+    arrange(TreeID) %>%
+    tibble::column_to_rownames(var = "TreeID")
+}
 
 ## Subset to the desired PFT
 sizes_interp_pft <- sizes_interp_all[row.names(treeData),]
@@ -162,7 +169,7 @@ for(i in 1:nTree){
 
 ## Load CWD data and subset for PFT
 cwd <- read.table(here::here(indir, "cwd_tree_year.csv"), header=TRUE, 
-                  sep = ',', row.names=1)
+                  sep = ',', row.names='TreeID')
 cwd_pft <- cwd[row.names(treeData),]
 
 ## Scale CWD values
