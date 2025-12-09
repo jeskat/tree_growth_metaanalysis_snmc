@@ -1,23 +1,21 @@
 ### File paths
 
 ## Directory containing all directories of MCMC runs
-mcmc_results_dir = file.path('/global','scratch','users','jessicakatz','forest_growth_synthesis','Outputs', 'SS_outputs') #file.path('/global','scratch','users','jessicakatz','forest_growth_synthesis','Outputs','Final_SSM_outputs')
+mcmc_results_dir = file.path('/global','scratch','users','jessicakatz',
+                             'forest_growth_synthesis','Outputs',
+                             'Final_SSM_outputs') 
 
 ## List of sub-directories associated with each model
-runs_c1_fn <- 'runs_to_concatenate_c1.RData' #'authors_runs_to_concatenate_c1.RData' # Chain 1
-runs_c2_fn <- 'runs_to_concatenate_c2.RData' #'authors_runs_to_concatenate_c2.RData' # Chain 2
+runs_c1_fn <- 'authors_runs_to_concatenate_c1.RData' # Chain 1
+runs_c2_fn <- 'authors_runs_to_concatenate_c2.RData' # Chain 2
 
 ## List of complete models
 model_list_fn <- 'authors_complete_models.RData'
 
-## log(DBH) effect parameter name in SSM
-lnD_nm <- 'log_size' # slope_size if processing author's results; 'log_size' if running a clean set of SSMs
-
 # Base list the parameters to report out on
 to_report <- c(
   'int_overall', 
-  'd2_size',
-  lnD_nm 
+  'd2_size'
 )
 
 ## Maps different aliases for sites to the appropriate input data folder
