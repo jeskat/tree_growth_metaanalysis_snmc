@@ -2,8 +2,8 @@
 ## Loop through all models and compile Gelman-Rubin statistics for all parameters
 ###----------------------------------------------------------------------------##
 
-source(here::here('config.R'))
-complete_models <- readRDS(here::here('Outputs', model_list_fn))
+source(here::here('State_space_growth_models/Code/ssm_config.R'))
+complete_models <- readRDS(here::here('State_space_growth_models/Outputs', model_list_fn))
 
 ## Instantiate empty list
 grdf <- vector('list', length = length(complete_models))
@@ -15,7 +15,7 @@ for(mod_num in 1:length(complete_models)){
   burn_in <- complete_models[[mod_num]][['burn_in']]
   
   ## Get Gelman-Rubin diagnostics
-  source(here::here('Code/convergence_diagnostics_one_model.R'))
+  source(here::here('State_space_growth_models/Code/convergence_diagnostics_one_model.R'))
   
   ## Dataframe of point estimates
   to_bind <- g$psrf

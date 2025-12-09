@@ -4,11 +4,11 @@ library('coda')
 library(readr)
 
 
-## Uncomment and specify variables below to run for only one model. 
+# ## Uncomment and specify variables below to run for only one model. 
 # site <- 'Blodgett'
-# pft <- 'white_pine'
+# pft <- 'fir'
 # model <- 'ddbh_model'
-# burn_in <- 250
+# burn_in <- 500
 
 # Get correct name of site to pull input data
 
