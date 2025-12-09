@@ -55,11 +55,11 @@ if(is.null(rndm_tags)){
   # Add a column defining the size class associated with each tree at its first observation
   treeList$Size_class = NA
   # Small
-  treeList[treeList$X1.0<sm_size_max, 'Size_class'] = sm_class
+  treeList[treeList[,1] <sm_size_max, 'Size_class'] = sm_class
   # Medium
-  treeList[(treeList$X1.0>=sm_size_max) & (treeList$X1.0<med_size_max), 'Size_class'] = md_class
+  treeList[(treeList[,1]>=sm_size_max) & (treeList[,1]<med_size_max), 'Size_class'] = md_class
   # Large
-  treeList[treeList$X1.0>=med_size_max, 'Size_class'] = lg_class
+  treeList[treeList[,1]>=med_size_max, 'Size_class'] = lg_class
   
   for(i in c(sm_class,md_class,lg_class)){
     rndm_tags <- append(rndm_tags, sample_trees(treeList,i))
