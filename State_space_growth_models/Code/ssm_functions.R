@@ -5,6 +5,21 @@ sample_trees <- function(df, size){
   return(rownames(mini_df[samps,]))
 }
 
+### Function to identify which column name includes the log(DBH) parameter.
+## Need this because some of the SSM models in Katz et al. were run using
+## "slope_size" as the name of the log(DBH) parameter, rather than "log_size."
+get_lnD_colnm <- function(mcmc_outputs){
+  if('slope_size' %in% colnames(mcmc_outputs)){
+    lnD_nm <- 'slope_size'
+  }else if('log_size' %in% colnames(mcmc_outputs)){
+    lnD_nm <- 'log_size'
+  }else{
+    print('log(DBH) parameter is missing from results.')
+  }
+  return(lnD_nm)
+}
+
+
 ### Load and combine into one data table all MCMC iterations associated with a chain
 ### mcmc_results_dir is where the subdirectories holding the MCMC outputs are saved
 load_mcmc <- function(site, pft, model, burn_in, chain, mcmc_results_dir, to_report){
@@ -36,8 +51,12 @@ load_mcmc <- function(site, pft, model, burn_in, chain, mcmc_results_dir, to_rep
       print(paste0('Dimensions of run ', i, ": ", dim(all_samples)))
       print(all_samples[(nrow(all_samples)-3):nrow(all_samples), 1:10])
       
+      # Identify which column name includes the log(DBH) parameter
+      lnD_nm <- get_lnD_colnm(all_samples)
+      
       # add parameters to report
       to_report <- c(to_report, 
+                     lnD_nm,
                      colnames(all_samples)[grep('beta', colnames(all_samples))], # all betas
                      colnames(all_samples)[grep('_sd', colnames(all_samples))], # all SDs
                      colnames(all_samples)[grep('treat_',colnames(all_samples))] # all treatment effects and interactions
@@ -199,3 +218,59 @@ addSitePFTModCols <- function(d, site, pft, model){
   d$model <- rep(model, nrow(d))
   return(d)
 }
+
+get_reparameterized_plot_growth <- function(CWD, # Climatic water deficit in units of standard deviations from site mean
+                                           DBH, # DBH in units of cm
+                                           plot_ids, # 
+                                           plotData, 
+                                           all_samples,
+                                           obs_ln_mean,
+                                           obs_ln_stdv,
+                                           obs_sq_mean,
+                                           obs_sq_sd){
+  ## Instantiate lists to hold MCMC summary statistics for each plot
+  out <- vector('list', length = 0)
+  plts <- vector('numeric', length = length(plot_ids))
+  means <- vector('numeric', length = length(plot_ids))
+  sds <- vector('numeric', length = length(plot_ids))
+  treats <- vector('character', length(plot_ids))
+  
+  # Identify which column name includes the log(DBH) parameter
+  lnD_nm <- get_lnD_colnm(all_samples)
+  
+  for(p in 1:length(plot_ids)){
+    # Get treatment associated with plot
+    trt <- plotData[as.character(plotData$PlotID) == plot_ids[p], 'treatment']
+    nm <- paste0('treat_mean[', trt, ']')
+    treats[p] <- nm
+    plts[p] <- p
+    
+    ## Calculate growth in plot at the specified DBH and CWD
+    out[[p]] <- all_samples[, 'int_overall'] + ## overall intercept
+      all_samples[, nm] + ## treatment effect
+      all_samples[, lnD_nm] * (log(DBH) - obs_ln_mean)/obs_ln_stdv + ## tree size effects
+      all_samples[, 'd2_size'] * (DBH^2 - obs_sq_mean)/obs_sq_sd + 
+      all_samples[, 'betaCWD']*CWD + ## CWD effect
+      all_samples[, paste0('treat_cwd[', trt, ']')] * CWD + ## CWD:treatment interaction
+      all_samples[, paste0('treat_size[', trt, ']')] * (log(DBH) - obs_ln_mean)/obs_ln_stdv +
+      plot_effects[, paste0('int_plot[', p, ']')] ## random plot effect
+    
+    ## Save MCMC means and SDs to lists
+    means[p] <- summary(out[[p]])$statistics['Mean']
+    sds[p] <- summary(out[[p]])$statistics['SD']
+  }
+  
+  df <- data.frame(out)
+  names(df) <- plot_ids
+  
+  long_tbl <- data.frame(unit =plot_ids, 
+                         variable = treats, 
+                         mean=means, 
+                         sd = sds,
+                         DBH = DBH,
+                         CWD = CWD)
+  
+  ## Summary table with plot ID, treatment, and mean and SD of growth
+  return(list(long_tbl = long_tbl, cv_mat = cov(df))) 
+}
+
