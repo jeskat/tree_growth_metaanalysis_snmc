@@ -35,6 +35,5 @@ for(mod_num in 1:length(complete_models)){
 out <- do.call(rbind, grdf)
 
 ## Save
-write.csv(out, here::here('Outputs', 
-                          paste0('all_gr_diagnostics_', Sys.Date(), '.csv')), 
-          row.names = FALSE)
+write.csv(out, here::here('State_space_growth_models/Outputs/Final_SSM_diagnostics/all_gr_diagnostics.csv'),
+                          row.names = FALSE)
