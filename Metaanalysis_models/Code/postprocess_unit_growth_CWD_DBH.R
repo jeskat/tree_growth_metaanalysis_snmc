@@ -17,7 +17,7 @@ complete_models <- readRDS(here::here('State_space_growth_models/Outputs', model
 growthResults <- vector('list', length = 0)
 covMatrices <- vector('list', length = 0)
 
-for(mod_num in 1:5){ #(length(complete_models))){
+for(mod_num in 1:(length(complete_models))){
   site <- complete_models[[mod_num]][['site']]
   model <- complete_models[[mod_num]][['model']]
   pft <- complete_models[[mod_num]][['pft']]
@@ -79,13 +79,12 @@ for(mod_num in 1:5){ #(length(complete_models))){
 to_save <- do.call(rbind, growthResults)
 
 ### Save to disk; file names include specified values for CWD and DBH
-fn <- paste0('growthOutcomes_CWD', as.character(CWD), 
-             '_DBH', as.character(DBH), '_',
+fn <- paste0('growthOutcomesByCWDAndDBH_',
              Sys.Date())
 
 write.csv(to_save, 
-          here::here('Outputs', 'Growth_outcomes', paste0(fn, '.csv')), 
+          here::here('Metaanalysis_models/Reparameterized_SSM_outputs/', paste0(fn, '.csv')), 
           row.names=FALSE)
 
 saveRDS(covMatrices, 
-        here::here('Outputs', 'Growth_outcomes', paste0(fn, '.RData')))
+        here::here('Metaanalysis_models/Reparameterized_SSM_outputs/', paste0(fn, '.RData')))
