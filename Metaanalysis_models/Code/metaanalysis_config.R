@@ -1,3 +1,6 @@
+## Significance threshold
+sgnf <- 0.10
+
 ## Data of post-processed statespace model files
 date <- '2025-12-09'
 
