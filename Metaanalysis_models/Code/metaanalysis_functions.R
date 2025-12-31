@@ -217,7 +217,7 @@ make_meta_df <- function(full_data,
   all_pfts[all_pfts$Treatment=='intrcpt', 'Effect'] = 'Control'
   all_pfts[all_pfts$Treatment=='BurnBurn', 'Effect'] = 'Burn'
   all_pfts[all_pfts$Treatment=='ThinThin', 'Effect'] = 'Thin'
-  all_pfts[all_pfts$Treatment=='BurnBurn:ThinThin', 'Effect'] = 'Burn:Thin Interaction'
+  all_pfts[all_pfts$Treatment=='BurnBurn:ThinThin', 'Effect'] = 'Thin:Burn Interaction'
   
   out <- list(all_pfts, allModels)
   
@@ -249,7 +249,7 @@ get_growth_predictions <- function(full_data,
   
   for(p in 1:length(pfts)){
     new_pred <- predict(meta_results[[2]][[pfts[p]]], newmods = as.matrix(to_predict))
-    new_pred$Treatment <- c('Control', 'Burn', 'Thin', 'Burn+Thin')
+    new_pred$Treatment <- c('Control', 'Burn', 'Thin', 'Thin+Burn')
     new_pred$PFT <- pft_dict[[pfts[p]]]
     out[[p]] <- as.data.frame(new_pred)
   }
@@ -275,3 +275,44 @@ get_trt_effects_tbl <- function(full_data,
   return(meta_results[[1]])
 }
 
+
+#' Creates a dataframe defining significant X-ranges (e.g., DBH or CWD) for plotting.
+#'
+#' @param df The main dataframe containing all data.
+#' @param x_var The unquoted column name for the X-variable (e.g., X_size).
+#' @param alpha The significance threshold (default is 0.05).
+#' @return A dataframe with columns: treatment, xstart, xend.
+identify_significant_ranges <- function(df, x_var, alpha = sgnf) {
+  data <- df[df$Effect!='Control',]
+  
+  # 1. Flag significance
+  data_sig <- data %>%
+    mutate(
+      is_significant = pval <= alpha
+    )
+  
+  # 2. Generate RLE ID for continuous runs of TRUE/FALSE
+  significance_df <- data_sig %>%
+    group_by(PFT, Effect) %>%
+    mutate(
+      rle_id = {
+        # Use the flagged column for RLE
+        rle_result <- rle(is_significant)
+        rep(seq_along(rle_result$lengths), rle_result$lengths)
+      }
+    ) %>%
+    # 3. Filter for significant runs and summarise to find segment boundaries
+    filter(is_significant == TRUE) %>%
+    group_by(PFT, Effect, rle_id) %>%
+    summarise(
+      # The Embrace operator {{}} is used here to dynamically select the x_var column
+      xstart = min({{ x_var }}),
+      xend = max({{ x_var }}),
+      .groups = 'drop'
+    ) %>%
+    # 4. Select and return
+    select(PFT, Effect, xstart, xend) %>%
+    rename(Treatment = Effect)
+  
+  return(significance_df)
+} 
