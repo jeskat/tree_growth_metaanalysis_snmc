@@ -51,7 +51,7 @@ for(mod_num in 1:(length(complete_models))){
   ### Compile MCMCs for growth in each plot
   plots <- levels(treeData$fPlot)
   
-  for(DBH in c(seq(20, 100, 10))){
+  for(DBH in c(15, seq(20, 100, 10))){
     for(CWD in seq(-3, 3, 1)){
       plot_outs <- get_reparameterized_plot_growth(CWD = CWD,
                                                    DBH = DBH,
@@ -79,8 +79,7 @@ for(mod_num in 1:(length(complete_models))){
 to_save <- do.call(rbind, growthResults)
 
 ### Save to disk; file names include specified values for CWD and DBH
-fn <- paste0('growthOutcomesByCWDAndDBH_',
-             Sys.Date())
+fn <- 'growthOutcomesByCWDAndDBH'
 
 write.csv(to_save, 
           here::here('Metaanalysis_models/Reparameterized_SSM_outputs/', paste0(fn, '.csv')), 
