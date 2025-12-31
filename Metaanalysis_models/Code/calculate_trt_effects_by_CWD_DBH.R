@@ -26,11 +26,9 @@ source(here::here('Figures_and_Tables/Code/plotting_functions.R'))
 ### Load table and list of covariance matrices that contain growth outcomes for 
 ### all combinations of site, PFT, DBH, and CWD
 all_dbh_cwd_results <- read.csv(paste0('Metaanalysis_models/Reparameterized_SSM_outputs/',
-                                   'growthOutcomesByCWDAndDBH_', 
-                                   date, '.csv'))
+                                   'growthOutcomesByCWDAndDBH.csv'))
 all_dbh_cwd_cvMatrices <- readRDS(paste0('Metaanalysis_models/Reparameterized_SSM_outputs/',
-                                         'growthOutcomesByCWDAndDBH_', 
-                                         date, '.RData'))
+                                         'growthOutcomesByCWDAndDBH.RData'))
 
 
 ###-----------------------------------------------------------------------------
@@ -152,7 +150,7 @@ sgnf_cwd <- identify_significant_ranges(pval_tbl_dbh30, CWD)
 cwd_plot <- plot_growth_by_xVar(sgnf_cwd,
                                 growth_dbh30, 
                                 x_var = CWD)
-cwd_plot <- cwd_plot + xlab(expression("CWD"^T*" (standard deviations from site mean)"))
+cwd_plot <- cwd_plot + xlab("Measurement period CWD (standard deviations from site mean)")
 
 print(cwd_plot)
 
@@ -166,14 +164,14 @@ ggsave(here::here('Figures_and_Tables/Figures/Fig4_growth_vs_cwd.png'),
 ###-----------------------------------------------------------------------------
 
 ## Set significance thresholds
-all_dbh_cwd_pvals[signif(all_dbh_cwd_pvals$pval, 2) <= 0.05, 'plot_pval'] = 'Strongly significant'
+all_dbh_cwd_pvals[signif(all_dbh_cwd_pvals$pval, 2) <= 0.05, 'plot_pval'] = "Clear (p <= 0.05)"
 all_dbh_cwd_pvals[signif(all_dbh_cwd_pvals$pval, 2) > 0.05 & 
-                    signif(all_dbh_cwd_pvals$pval, 2) <= 0.1, 'plot_pval'] = 'Weakly significant'
-all_dbh_cwd_pvals[signif(all_dbh_cwd_pvals$pval, 2) > 0.1, 'plot_pval'] = 'Not significant'
+                    signif(all_dbh_cwd_pvals$pval, 2) <= 0.1, 'plot_pval'] = 'Suggestive (0.05 < p <= 0.1)'
+all_dbh_cwd_pvals[signif(all_dbh_cwd_pvals$pval, 2) > 0.1, 'plot_pval'] = 'Unclear (p > 0.1)'
 
 ## Convert 'significance' to a factor to control its order
 all_dbh_cwd_pvals$plot_pval <- factor(all_dbh_cwd_pvals$plot_pval, levels = c(
-  "Strongly significant", "Weakly significant", "Not significant"
+  "Clear (p <= 0.05)", "Suggestive (0.05 < p <= 0.1)", "Unclear (p > 0.1)"
 ))
 
 ## Make DBH a character and set its order
@@ -181,7 +179,7 @@ all_dbh_cwd_pvals$DBH_char <- factor(as.character(all_dbh_cwd_pvals$DBH),
                                      levels = as.character(sort(unique(all_dbh_cwd_results$DBH))))
 
 ## Make labels legible
-all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect=="Burn:Thin Interaction", "Effect"] = "Burn:Thin\n Interaction"
+all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect=="Burn:Thin Interaction", "Effect"] = "Thin:Burn\n Interaction"
 
 
 ## Construct heatmap
@@ -205,11 +203,11 @@ heatmap <- ggplot(all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect != "Control",],
     ) +
   # Assign specific patterns to each category
   scale_pattern_manual(
-    name = "Significance",
+    name = "Statistical clarity",
     values = c(
-      "Strongly significant" = "crosshatch",
-      "Weakly significant" = "stripe",
-      "Not significant" = "none" # Use 'none' for no pattern
+      "Clear (p <= 0.05)" = "crosshatch",
+      "Suggestive (0.05 < p <= 0.1)" = "stripe",
+      "Unclear (p > 0.1)" = "none" # Use 'none' for no pattern
     )
     ) +
   guides(
@@ -219,7 +217,7 @@ heatmap <- ggplot(all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect != "Control",],
     ) +
   labs(
     y = "DBH (cm)",
-    x = expression("CWD"^T*" (standard deviations from site mean)")
+    x = "Measurement period CWD\n(standard deviations from site mean)"
     ) +
   theme_minimal(base_size = 14) + # A clean theme for the plot
   theme(axis.line = element_line(color='black'),
@@ -232,7 +230,7 @@ heatmap <- ggplot(all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect != "Control",],
 
 ## Facet by PFT and treatment   
 heatmap = heatmap + facet_grid(PFT~factor(Effect, 
-                                          levels = c('Burn', 'Thin', 'Burn:Thin\n Interaction')))
+                                          levels = c('Burn', 'Thin', 'Thin:Burn\n Interaction')))
 
 print(heatmap)
 

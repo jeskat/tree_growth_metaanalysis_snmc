@@ -1,7 +1,7 @@
 ###---------------------------------------------------------------------------##
 ## Runs meta-analyses and makes Figure 2 and Supplementary Tables F1-F3 
 ## (Pooled effects of treatment, tree size, measurement period climatic water 
-## deficit (CWDT), and their interactions on tree growth.)
+## deficit (CWD), and their interactions on tree growth.)
 ###---------------------------------------------------------------------------##
 
 ###-----------------------------------------------------------------------------
@@ -131,13 +131,13 @@ sizeMeta <- ggarrange(cntrlSize, trtSize,
 
 ## Panel E
 cntrlCWD <- plot_meta_analysis(meta_cwd[[1]], 
-                               axis_label = expression("Effect of CWD"^T*" on growth"),
+                               axis_label = "Effect of measurement period CWD on growth",
                                control = TRUE,
                                zero_line = TRUE)
 
 ## Panel F
 trtCWD <- plot_meta_analysis(meta_cwd[[1]], 
-                             axis_label = expression("Effect of treatment on the CWD"^T*" effect"),
+                             axis_label = expression("Effect of treatment on the CWD effect"),
                              control = FALSE,
                              zero_line = TRUE)
 
