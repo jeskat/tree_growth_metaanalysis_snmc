@@ -60,14 +60,14 @@ annual_pdsi <- tapp(pdsi_h2oyr, 'years', mean, na.rm=TRUE) ## Mean annual PDSI
 
 ## Save to disk
 writeCDF(annual_smr_tmax, 
-         here::here('Covariate_and_metaregressor_processing/Outputs/tmax_by_waterYr.nc'), 
+         here::here('Covariate_and_metaregressor_processing/Processed_data/Climate/tmax_by_waterYr.nc'), 
                     overwrite = TRUE)
 writeCDF(annual_wnt_ppt, 
-         here::here('Outputs/ppt_by_waterYr.nc'), 
+         here::here('Covariate_and_metaregressor_processing/Processed_data/Climate/ppt_by_waterYr.nc'), 
                     overwrite = TRUE)
 writeCDF(annual_cwd, 
-         here::here('Outputs/cwd_by_waterYr.nc'), 
+         here::here('Covariate_and_metaregressor_processing/Processed_data/Climate/cwd_by_waterYr.nc'), 
                     overwrite=TRUE)
 writeCDF(annual_pdsi, 
-         here::here('Outputs/pdsi_by_waterYr.nc'), 
+         here::here('Covariate_and_metaregressor_processing/Processed_data/Climate/pdsi_by_waterYr.nc'), 
          overwrite = TRUE)
