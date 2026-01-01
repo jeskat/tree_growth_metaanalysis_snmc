@@ -75,3 +75,26 @@ treat_dict = {
     23: 'Burn+Thin',
     24: 'Thin'
 }
+
+## Dictionary of study start years (first post-treatment inventory in each study)
+start_years = {
+    'Blodgett':2003,
+    'LaTour':2005,
+    'Sequoia':2006,
+    'STEF':2012,
+    'Teakettle':2002,
+    'TharpsCreek':1992,
+    'WLakeTahoe':2009,
+    
+}
+
+## Dictionary of final inventory years
+end_years = {
+    'Blodgett':2020,
+    'LaTour':2020,
+    'Sequoia':2021,
+    'STEF':2018,
+    'Teakettle':2019,
+    'TharpsCreek':2023,
+    'WLakeTahoe':2018
+}

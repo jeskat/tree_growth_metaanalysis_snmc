@@ -26,33 +26,3 @@ def find_plot_gridcells(ds, plots):
     out = pd.concat(df_dict.values())
     out.reset_index(inplace=True, drop=False)
     return out
-
-def cvar_mean_by_plot(cvar, df):
-    '''Loops through sites; for each site, finds the mean value of the climate variable for each 
-    measurement unit (plot) over the study timeframe'''
-    site_list = []
-    plot_list = []
-    val_list = []
-    unit_nms = []
-    
-    for site in df['Site'].unique():
-        ## Open tree-level information
-        pft_df = pd.read_csv('Outputs/Processed_data_for_statespace/{}/{}_pft_df.csv'.format(site,site))
-        
-        # Subset by initial and final year of the study
-        yri = pft_df['start_year'].min() + 1 # Include the next climate year but not the previous
-        yrf = pft_df['end_year'].max()
-        data_subset = df.loc[(df['Site']==site) & (df['year']>=yri) & (df['year']<=yrf)]
-
-        ## Loop through units
-        for u in data_subset['UnitID'].unique():
-            ## Loop through subplots
-          for p in data_subset.loc[data_subset['UnitID']==u, 'PlotID'].unique():
-              site_list = site_list + [site]
-              unit_nms = unit_nms + [u]
-              plot_list = plot_list + data_subset.loc[(data_subset['UnitID']==u) & (data_subset['PlotID']==p), 'unique_nm'].unique().tolist()
-              # Mean value of climate variable
-              val_list = val_list + [data_subset.loc[(data_subset['UnitID']==u) & (data_subset['PlotID']==p), cvar].mean()]
-        
-    mean_plot_cvar = pd.DataFrame({'Site':site_list, 'UnitID':unit_nms, 'unique_nm':plot_list, cvar:val_list})
-    return mean_plot_cvar
