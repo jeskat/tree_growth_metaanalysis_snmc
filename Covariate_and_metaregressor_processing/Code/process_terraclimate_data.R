@@ -13,9 +13,9 @@ cwd <- rast(
 pdsi <- rast(
   here::here('Covariate_and_metaregressor_processing/Input_data/TerraClimate_datafiles/agg_terraclimate_PDSI_1958_CurrentYear_GLOBE.nc'))
 tmax <- rast(
-  here::here('Input_data/Climate/agg_terraclimate_tmax_1958_CurrentYear_GLOBE.nc'))
+  here::here('Covariate_and_metaregressor_processing/Input_data/TerraClimate_datafiles/agg_terraclimate_tmax_1958_CurrentYear_GLOBE.nc'))
 ppt <- rast(
-  here::here('Input_data/Climate/agg_terraclimate_ppt_1958_CurrentYear_GLOBE.nc'))
+  here::here('Covariate_and_metaregressor_processing/Input_data/TerraClimate_datafiles/agg_terraclimate_ppt_1958_CurrentYear_GLOBE.nc'))
 
 ### Function to shift calendar year to climate year 
 ### (climate year is October - September)
@@ -60,7 +60,7 @@ annual_pdsi <- tapp(pdsi_h2oyr, 'years', mean, na.rm=TRUE) ## Mean annual PDSI
 
 ## Save to disk
 writeCDF(annual_smr_tmax, 
-         here::here('Outputs/tmax_by_waterYr.nc'), 
+         here::here('Covariate_and_metaregressor_processing/Outputs/tmax_by_waterYr.nc'), 
                     overwrite = TRUE)
 writeCDF(annual_wnt_ppt, 
          here::here('Outputs/ppt_by_waterYr.nc'), 
