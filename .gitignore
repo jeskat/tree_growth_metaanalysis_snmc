@@ -35,5 +35,11 @@ po/*~
 rsconnect/
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*.pyc
 # Jupyter Notebook
 .ipynb_checkpoints
+# Temporary ssm diagnostics files
+figure/
+create_ssm_diagnostics.*
+# Large files
+*TerraClimate_datafiles/
