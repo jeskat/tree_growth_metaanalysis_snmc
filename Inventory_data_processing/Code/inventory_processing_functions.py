@@ -201,6 +201,63 @@ def manage_outliers(master_df, outlier_df, outlier_lookup,
     return ddbh_noOutliers 
 
 
+def point_on_line(df, out_idx, x_col, y_col, pts = [1,2]):
+    '''Function that calculates a point on a line based on two other points that define the line'''
+    m = (df.iloc[pts[1]][y_col]-df.iloc[pts[0]][y_col])/(df.iloc[pts[1]][x_col]-df.iloc[pts[0]][x_col])
+    return m * (df.iloc[out_idx][x_col]-df.iloc[pts[1]][x_col]) + df.iloc[pts[1]][y_col]
+    
+
+def fill_outlier_dbh(tree_df, dbh_col, treeid_col, date_col, out_col='Outlier'):
+    '''This function is used to create the tree timeseries that will inform BA and SDI calculation. For each record that is a growth outlier, it replaces the reported DBH with one that is linearly interpolated from the nearest two non-outlier measurements'''
+    # make a new column for updated DBHs
+    tree_df = tree_df.copy()
+    tree_df['DBH_BA'] = tree_df[dbh_col]
+    
+    # Set the DBH of the outlier to null 
+    outlier = tree_df.loc[tree_df[out_col]==1]
+    tree_df.loc[outlier.index,'DBH_BA'] = np.nan
+
+    # If there only two records
+    if len(tree_df) == 2: 
+        # if all measurements are nonzero, DBH in both years is the average of the two DBHs
+        if outlier[dbh_col].all() !=0: 
+            tree_df.loc[outlier.index,'DBH_BA'] = tree_df[dbh_col].mean()
+        # Otherwise, reset the outlier DBH to 0
+        else: 
+            tree_df.loc[outlier.index,'DBH_BA'] = 0
+            
+    # if ALL of the records are outliers, set DBH in all years DBH to the average DBH        
+    elif (tree_df['Outlier']==1).all(): 
+        tree_df.loc[outlier.index,'DBH_BA'] = tree_df[dbh_col].mean() 
+        print('{} is all outliers'.format(tree_df.iloc[0][treeid_col])) # Flag these trees
+        
+    # if there are more than two records not all records are outliers
+    else: 
+        # for each outlier
+        for i in outlier.index: 
+            only_one_outlier = tree_df.loc[(tree_df.index==i) | (tree_df[out_col]==0)].copy()
+
+            # assign consecutive row numbers to each record
+            only_one_outlier['row'] = [m for m, n in enumerate(only_one_outlier.index)] 
+
+            # find the row # associated with the record
+            out_idx = only_one_outlier.loc[i,'row'] 
+
+            # calculate the "distance" of every other row to out_idx
+            only_one_outlier['row_dists'] = [abs(out_idx-only_one_outlier.iloc[k]['row']) for k in range(len(only_one_outlier))] 
+
+            # sort the rows that are NOT outliers by their distance from out_dx
+            pt_cands = only_one_outlier.loc[only_one_outlier['row_dists']>0].sort_values('row_dists') 
+
+            # the closest two records from which to define the line are the first two rows
+            pts = pt_cands.iloc[0:2]['row'].tolist()  
+
+            # interpolate the DBH of the outlier
+            tree_df.loc[i,'DBH_BA'] = point_on_line(only_one_outlier, out_idx=out_idx, x_col= date_col, y_col=dbh_col, pts=pts) 
+    return tree_df
+
+
+
 def single_records(df, treeid_col):
     '''Identify the trees for which there is only a single DBH record (i.e., no way to calculate ddbh)'''
     treeID_single_measurement = []
@@ -267,3 +324,72 @@ def make_statespace_df(no_outlier_df,
                          species_col: "Species", year_col: "Year", 
                          status_col: "Status", dbh_col: "DBH"}, inplace=True)
     return tree_level_df, pft_df
+
+
+def make_dummy(df, unit_col, date_col):
+    '''Based on a dataframe `df` of repeat inventories, makes a dummy dataframe with one row for each combination of plot and year.'''
+    dummy = pd.DataFrame({unit_col:np.repeat(df[unit_col].unique(), len(df[date_col].unique())),
+                date_col: list(df[date_col].unique()) * len(df[unit_col].unique())})
+    
+    return dummy
+
+def make_pft_dummy(df, unit_col, date_col, species_col):
+    '''Based on a dataframe `df` of repeat inventories, makes a dummy dataframe with one row for each plot-species-year combination'''
+    pft_dummy = pd.DataFrame({unit_col:np.repeat(df[unit_col].unique(), len(df[date_col].unique())*len(df[species_col].unique())),
+                          date_col: list(np.repeat(df[date_col].unique(), len(df[species_col].unique()))) * len(df[unit_col].unique()),
+                          species_col: list(df[species_col].unique()) * len(df[unit_col].unique())*len(df[date_col].unique())})
+    return pft_dummy
+
+def ba_reduction(df, unit_col, time_col, pre_ind, post_ind):
+    '''Takes in a timeseries of basal area by treatment unit and returns an estimate of treatment intensity (percent reduction in basal area between the pre-treatment and first post-treatment measurement) for each unit.'''
+    unit_lst = []
+    trt_lst = []
+    rdctn = []
+    
+    for unit in df[unit_col].unique():
+        ba_rdctn = (float(df.loc[(df[unit_col]==unit) & (df[time_col]==pre_ind), 'BAperTree_m2ha'])-float(df.loc[(df[unit_col]==unit) & (df[time_col]==post_ind), 'BAperTree_m2ha']))/float(df.loc[(df[unit_col]==unit) & (df[time_col]==pre_ind), 'BAperTree_m2ha'])
+        unit_lst = unit_lst + [unit]
+        trt_lst = trt_lst + [df.loc[df[unit_col]==unit, 'Treatment'].unique()[0]]
+        rdctn = rdctn + [ba_rdctn * 100]
+    
+    ## Make an output dataframe
+    out = pd.DataFrame({'UnitID':unit_lst, 'Treatment':trt_lst, 'BA_reduction':rdctn})
+    return out
+
+def make_site_sdi_table(species_by_unit, mc_max_sdis = { ## Species-specific SDImax values given for even-aged Sierra Nevada mixed-conifer stands in Table 2 of Long and Shaw (2012)
+    'PIPO':446, 
+    'PILA': 561, 
+    'PSME': 570, 
+    'ABCO': 634, 
+    'CADE': 576, 
+    'ABMA': 768, 
+    'PIJE': 497, 
+    'QUKE': 406
+}):
+  ## Mean species composition (by BA) across units within sites
+  temp = species_by_unit.groupby(['Species'], as_index=False)['Species_frac'].agg('mean')
+
+  ## Get max SDI for each species
+  temp.loc[:,'maxSDI'] = [mc_max_sdis[i] if i in mc_max_sdis else np.nan for i in temp['Species']]
+
+  # Remove minor associates that don't have a max SDI estimate in Long & Shaw 2012
+  site_species_frac = temp.loc[temp['maxSDI'].isnull()==False].copy()
+
+  ## Recalculate species fractions 
+  site_species_frac['Species_frac_adj'] = site_species_frac['Species_frac']/site_species_frac['Species_frac'].sum()
+
+  ## Calculate weighted average max SDI for site
+  site_species_frac['SDI_x_frac'] = site_species_frac['maxSDI']*site_species_frac['Species_frac_adj']
+
+  return site_species_frac
+
+
+def get_site_max_sdi(site_sdi_table):
+  return site_sdi_table['SDI_x_frac'].sum()
+    
+
+def make_rSDI_table(sdi_by_unit_df, site_sdi):
+  out = sdi_by_unit_df.copy()
+  out['maxSDI'] = site_sdi
+  out['rSDI'] = out['SDI_in']/out['maxSDI']
+  return out
