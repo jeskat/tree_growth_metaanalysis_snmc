@@ -7,6 +7,20 @@ library(lubridate)
 library(terra)
 library(sf)
 
+### Before running this code, TerraClimate data need to be downloaded into the 
+### folder Covariate_and_metaregressor_processing/Input_data/TerraClimate_datafiles/.
+### TerraClimate climate data netcdf files are available at
+### http://thredds.northwestknowledge.net:8080/thredds/terraclimate_aggregated.html. 
+### Download the following:
+###  TERRACLIMATE Climatic Water Deficit 1958_CurrentYear Aggregated - Monthly
+###  TERRACLIMATE Palmer Drought Severity Index 1958_CurrentYear Aggregated - Monthly
+###  TERRACLIMATE Precipitation 1958_CurrentYear Aggregated - Monthly
+###  TERRACLIMATE Maximum Temperature 1958_CurrentYear Aggregated - Monthly
+### Reference: Abatzoglou, J., Dobrowski, S., Parks, S. et al. TerraClimate, 
+### a high-resolution global dataset of monthly climate and climatic water 
+### balance from 1958–2015. Sci Data 5, 170191 (2018). 
+### https://doi.org/10.1038/sdata.2017.191
+
 ## Load terraclimate data from netcdf files downloaded from the source
 cwd <- rast(
   here::here('Covariate_and_metaregressor_processing/Input_data/TerraClimate_datafiles/agg_terraclimate_def_1958_CurrentYear_GLOBE.nc'))
