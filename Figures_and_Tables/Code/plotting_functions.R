@@ -243,4 +243,168 @@ plot_growth_by_xVar <- function(sig_df,
   
 }
 
+## Function to plot meta-regression lines, faceted by PFT, on top of data points
+## Option to map point size to weight of data point in the meta-analysis
+plot_weightedRegression_allTreats <- function(df_to_plot, ## dataframe containing input data and weights to the meta-regression model
+                                              rgr, ## name of regressor
+                                              xlab, ## x-axis label
+                                              plim=c(0.5, 2), ## min and max marker size
+                                              regLine_df, ## dataframe with regression line data
+                                              by_unit, ## Meta-analysis by unit? T/F
+                                              uncenter = TRUE, ## Uncenter metaregressor? T/F
+                                              oneRegLine = FALSE ## Only TRUE if treatment is not in the meta-regression model
+){
+  
+  ## Scale point sizes to the plim
+  wi <- df_to_plot$psize
+  rng <- max(wi) - min(wi)
+  psize <- (wi - min(wi)) / rng
+  psize <- (psize * (plim[2] - plim[1])) + plim[1]
+  df_to_plot$psizeScaled <- psize
+  
+  ## Change name of control plot
+  df_to_plot$Treatment[df_to_plot$Treatment == 'None'] = 'Control'
+  df_to_plot$Treatment[df_to_plot$Treatment == 'Burn+Thin'] = 'Thin+Burn'
+  
+  ## Uncenter metaregressor
+  if(uncenter){
+    df_to_plot$rgr_uncntred <- df_to_plot[[rgr]] + df_to_plot$rgr_cntr
+    var_nm <- 'rgr_uncntred'
+  }else{
+    var_nm <- rgr
+  }
+  
+  ## Plot scatter plot
+  if(by_unit){
+    p <- ggplot(df_to_plot,
+                aes(x=get(var_nm), y=mean, 
+                    color=Treatment, 
+                    shape = common_nm)
+    ) +
+      # geom_hline(yintercept=0, lty=2) + ## Option to include a horizontal line at y = 0
+      geom_point(position=position_dodge(width = sd(df_to_plot[[var_nm]])/100), 
+                 alpha = 0.4, 
+                 size = 3) +
+      scale_color_manual(values = unlist(trt_cols), 
+                         breaks = c('Control', 'Burn', 'Thin', 'Thin+Burn') 
+      ) + 
+      ## Option to map marker shape to treatment 
+      # scale_shape_manual(values=trt_shapes, breaks = c('Control', 'Burn', 'Thin', 'Burn+Thin'))
+      
+      ## Option to map marker shape to site
+      scale_shape_manual(values=site_shapes, name = 'Site', 
+                         breaks = c('Blodgett', 'LaTour', 'Sequoia', 'STEF', 'Teakettle',
+                                    "Tharp's Creek", "W. Lake Tahoe"))
+    
+    
+  }else{
+    p <- ggplot(df_to_plot,
+                aes(x=get(var_nm), y=mean, 
+                    # size=psizeScaled, 
+                    color=Treatment,
+                    shape = common_nm)) +
+      # geom_hline(yintercept=0, lty=2) + ## Option to include a horizontal line at y = 0
+      geom_point(position=position_dodge(width = sd(df_to_plot[[var_nm]])/100), 
+                 alpha = 0.4, 
+                 size = 3) +
+      
+      scale_color_manual(values = unlist(trt_cols), 
+                         breaks = c('Control', 'Burn', 'Thin', 'Thin+Burn') 
+      ) + 
+      
+      scale_shape_manual(values=site_shapes, name = 'Site', 
+                         breaks = c('Blodgett', 'LaTour', 'Sequoia', 'STEF', 'Teakettle',
+                                    "Tharp's Creek", "W. Lake Tahoe"))  
+  }
+  
+  ## Plot regression lines
+  if(nrow(regLine_df!=0)){
+    if(uncenter){
+      regLine_df[[var_nm]] <- regLine_df[[rgr]] + regLine_df$rgr_cntr
+    }
+    
+    ## If treatment is not a variable in the meta-regression model
+    if(oneRegLine){ 
+      p <- p + geom_line(data = regLine_df, inherit.aes = FALSE,
+                         aes(x=get(var_nm), y=pred), 
+                         linewidth = 1.0, color = 'black') 
+      ## Option to include a ribbon
+      # geom_ribbon(data = regLine_df, aes(x =get(var_nm), y=pred, ymin = ci.lb, ymax = ci.ub, fill=PFT), alpha = 0.1, color=NA, show.legend = FALSE, size = 0.5) +
+      
+      ## Option to color by PFT
+      # scale_color_manual(values=unlist(pft_cols), guide = FALSE) #+
+      # scale_fill_manual(values=unlist(pft_cols), guide = FALSE)
+    }else{
+      p <- p + geom_line(data = regLine_df, inherit.aes = FALSE,
+                         aes(x=get(var_nm), y=pred, color=Treatment), # Alternative: linetype = Treatment
+                         linewidth = 1.0) + 
+        scale_color_manual(values = unlist(trt_cols), 
+                           breaks = c('Control', 'Burn', 'Thin', 'Thin+Burn') 
+        ) #+
+      ## Option to style lines by treatment
+      # scale_linetype_manual(values = unlist(trt_styles), breaks = c('Control', 'Burn', 'Thin', 'Burn+Thin'))
+    }
+    ## If there are not significant regression lines, just return the scatterplot
+  }else{
+    p <- p + scale_color_manual(values = unlist(trt_cols), 
+                                breaks = c('Control', 'Burn', 'Thin', 'Thin+Burn') 
+    )
+  }
+  
+  ## Stylying
+  p <- p + xlab(xlab) + ylab(paste0("Log DBH increment")) +
+    theme_minimal(base_size = 14) +
+    theme(axis.line = element_line(color='black'),
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank(),
+          legend.position = 'bottom', 
+          legend.direction = 'horizontal',
+          legend.box = 'vertical')
+  
+  return(p) #+ rremove('ylab'))}
+}
+
+
+## Function takes in a set of meta-regression model outputs and plots the meta-regression results
+plotMetaRegression <- function(
+    allPFToutputs, ## full set of outputs from `make_meta_df`
+    rgr, ## name of regressor
+    sgnf, ## significance level
+    uncenter = TRUE, ## Uncenter metaregressor? T/F
+    by_unit=FALSE ## Metaregression by unit? T/F
+){
+  
+  ## Get weighted input data
+  df_w_weights <- make_weights_df(allPFTmodels = allPFToutputs[[2]], 
+                                  rgr = rgr)
+  
+  ## Construct regression line data
+  reg_lines <- make_regLine_allPFTs(
+    allPFToutputs = allPFToutputs, 
+    rgr = rgr, 
+    sgnf = sgnf)
+  
+  ## Plot meta-regression; facet by PFT
+  p <- plot_weightedRegression_allTreats(
+    df_to_plot = df_w_weights, 
+    rgr = rgr , 
+    xlab = pretty_mrs[[rgr]], 
+    regLine_df = reg_lines, 
+    uncenter = uncenter, 
+    by_unit = by_unit)
+  
+  return(p+facet_wrap(~factor(PFT, 
+                              levels = c('Cedar', 'Fir', 'Sugar Pine', 'Yellow Pine')), 
+                      ncol=2))
+}
+
+## Function to clean up regression labels in summary tables
+beautify_table_labels <- function(
+    mr_tbl, ## metaregression results table
+    rgr ## name of regressor
+){
+  mr_tbl$Parameter <- str_replace_all(mr_tbl$Parameter, rgr, 
+                                      corrplot_shorthand[[rgr]])
+  return(mr_tbl)
+}
 

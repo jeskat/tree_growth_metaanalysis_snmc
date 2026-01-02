@@ -93,7 +93,7 @@ mf_meta_one_pft <- function(full_data, # dataframe formatted according to `forma
       ## Add metaregressor data to the dateframe
       to_plot <- left_join(to_plot, 
                            rgr_df, 
-                           join_by(site == Site, 
+                           join_by(common_nm == common_nm, 
                                    unit == UnitID,
                                    Treatment == Treatment))
       
@@ -316,3 +316,236 @@ identify_significant_ranges <- function(df, x_var, alpha = sgnf) {
   
   return(significance_df)
 } 
+
+###-----------------------------------------------------------------------------
+### Meta-regression functions
+###-----------------------------------------------------------------------------
+
+### Function to extract meta-regression weights associated with each study
+get_weights <- function(model, ## Metafor model object
+                        rgr ## name of regressor
+){
+  mod_dat <- model$data
+  
+  # Make sure that order of points is the same
+  if(identical(mod_dat$mean, as.vector(model$yi))==FALSE){
+    return(print('Order of weights and yi are not the same.'))
+  }else{
+    mod_dat$weights <- weights(model)
+    
+    ## Add regressor center to dataframe for easy transforming later
+    mod_dat$rgr_cntr <- attr(mod_dat[[rgr]], 'scaled:center')
+    
+    return(mod_dat)
+  }
+}
+
+## Function loops through all PFT-specific model and produces a dataframe of 
+## weights associated with each data point in the meta-analysis. 
+make_weights_df <- function(
+    allPFTmodels, ## Second output of `make_meta_df`
+    rgr ## name of regressor
+){
+  
+  allPFTweights <- vector('list', length = length(names(allPFTmodels)))
+  weight_ranges <- vector('numeric', length = length(names(allPFTmodels)))
+  
+  ## Loop through all PFTs and get model weights
+  for(p in names(allPFTmodels)){
+    pft_mod <- allPFTmodels[[p]]
+    pft_df <- get_weights(pft_mod, rgr)
+    
+    allPFTweights[[p]] <- pft_df
+    weight_ranges[[p]] <- max(pft_df$weights) - min(pft_df$weights)
+  }
+  
+  ## Compine weights from all PFT-specific models into one table
+  out <- do.call(rbind, allPFTweights)
+  
+  ## For point sizes, scale weights to the max weight for the PFT with the largest weight range
+  pft_to_ref <- names(which.max(unlist(weight_ranges)))
+  ref_max <- max(allPFTweights[[pft_to_ref]]$weights)
+  
+  out$psize <- out$weights
+  
+  for(p in names(allPFTmodels)){
+    if(p!=pft_to_ref){
+      pft_max <- max(out[out$pft == p, 'weights'])
+      adj <- ref_max / pft_max
+      out[out$pft == p, 'psize'] = out[out$pft ==p, 'weights'] * adj
+    }
+  }
+  
+  return(out)
+}
+
+### Function takes a PFT-specific meta-analysis model and produces a dataframe with 
+### the predicted meta-analysis growth model outputs for different combinations of
+### regressor and treatment. Only produces lines if the control or a given 
+### treatments has a significant interaction with the meta-regressor.
+regLine_onePFT <- function(
+    allPFToutputs, ## full set of outputs from `make_meta_df`
+    rgr, ## name of regressor
+    p, ## pft
+    sgnf ## significance level
+){
+  
+  ## Subset PFT model of interest
+  pmod <- allPFToutputs[[2]][[p]]
+  
+  ## Get regressor min and max value in control units and create a regressor vector x
+  temp_rgr <- pmod$data[pmod$data$Treatment == 'None',]
+  x <- seq(min(temp_rgr[[rgr]]), max(temp_rgr[[rgr]]), length.out = 100)
+  
+  ## Subset p-values for PFT of interest
+  out_pft <- allPFToutputs[[1]][allPFToutputs[[1]]$PFT==pft_dict[[p]],]
+  
+  ## Instantiate an predictor dataframe consisting of a columns for Burn (1 or 0), 
+  ## Thin (1 or 0), and regressor (x)
+  ## For the control, set Burn = 0 and Thin = 0.
+  df <- data.frame(cbind(BurnBurn = 0, ThinThin = 0, var = x))
+  colnames(df) <- c('BurnBurn', 'ThinThin', rgr)
+  
+  ## Loop through pooled effects for the Burn and Thin treatment
+  for(trt_lbl in c('BurnBurn', 'ThinThin')){
+    
+    ## Subset data from Burned or Thinned units
+    if(trt_lbl=='BurnBurn'){
+      rgr_trt <- pmod$data[pmod$data$Burn == 'Burn',] 
+    }else if(trt_lbl=='ThinThin'){
+      rgr_trt <- pmod$data[pmod$data$Thin == 'Thin',]
+    }
+    ## Reconstruct x based on the min and max value of the regressor in the 
+    ## treated units
+    x <- seq(min(rgr_trt[[rgr]]), max(rgr_trt[[rgr]]), length.out = 100)
+    
+    ## If the model includes an interaction between the treatment and the metaregressor
+    if(paste0(trt_lbl, ":", rgr) %in% out_pft$Treatment){
+      
+      ## If the interaction term is significant 
+      if(signif(out_pft[out_pft$Treatment == paste0(trt_lbl, ":", rgr), 'pval'], 2) <= sgnf){
+        
+        ## Add rows to the predictor dataframe for the treatment
+        df_trt <- data.frame(cbind(BurnBurn = 0, ThinThin = 0, var = x))
+        colnames(df_trt) <- c('BurnBurn', 'ThinThin', rgr)
+        ## Reset the treatment of interest to 1
+        df_trt[[trt_lbl]] = 1
+        df <- rbind(df, df_trt)
+      }
+      ## Otherwise, if a treatment:regressor interaction is not in the model
+    }else{ 
+      ## Check whether the treatment effect is in the model
+      if(trt_lbl %in% out_pft$Treatment){
+        ## Check whether the treatment is significant
+        if(signif(out_pft[out_pft$Treatment == paste0(trt_lbl), 'pval'], 2) <= sgnf){
+          ## If significant, add rows to the predictor dataframe for the treatment
+          df_trt <- data.frame(cbind(BurnBurn = 0, ThinThin = 0, var = x))
+          colnames(df_trt) <- c('BurnBurn', 'ThinThin', rgr)
+          df_trt[[trt_lbl]] = 1
+          df <- rbind(df, df_trt)
+        }
+      }
+    }
+  }
+  
+  ## If the model contains a Burn:Thin:regressor interaction
+  if(paste0("BurnBurn:ThinThin:", rgr) %in% out_pft$Treatment){
+    ## Subset input data from Burn+Thin units
+    rgr_trt <- pmod$data[pmod$data$Treatment == 'Burn+Thin',] 
+    
+    ## Reconstruct x based on the min and max value of the regressor in the 
+    ## Burn+Thin units
+    x <- seq(min(rgr_trt[[rgr]]), max(rgr_trt[[rgr]]), length.out = 100)
+    
+    ## If the Burn:Thin:regressor interaction is significant
+    if(signif(out_pft[out_pft$Treatment==paste0("BurnBurn:ThinThin:", rgr), 'pval'], 2) <= sgnf){
+      
+      ## Add rows to the predictor dataframe for the Burn+Thin treatment
+      df_trt <- data.frame(cbind(BurnBurn = 0, ThinThin = 0, var = x))
+      colnames(df_trt) <- c('BurnBurn', 'ThinThin', rgr)
+      df_trt$BurnBurn = 1
+      df_trt$ThinThin = 1
+      df <- rbind(df, df_trt)
+    }
+  }
+  
+  ## If none of the regressor effects are significant, return an empty dataframe
+  if(nrow(df) == length(x)){
+    if(signif(out_pft[out_pft$Treatment == rgr, 'pval'], 2) > sgnf){
+      return(data.frame())
+    }
+  }
+  
+  ## If there is a Burn:Thin interaction in the model, add a Burn:Thin column 
+  ## to the predictor dataframe by multiplying the Burn and Thin (1 or 0) values
+  if('BurnBurn:ThinThin' %in% out_pft$Treatment){
+    df[['BurnBurn:ThinThin']] = df$BurnBurn * df$ThinThin
+  }
+  
+  ## If there was a treatment:regressor interaction in the model, add interaction
+  ## columns to the predictor dataframe by multiplying the Burn or Thin indicator
+  ## by the regressor
+  for(trt_lbl in c('BurnBurn', 'ThinThin')){
+    if(paste0(trt_lbl, ":", rgr) %in% out_pft$Treatment){
+      df[[paste0('BurnBurn:', rgr)]] = df$BurnBurn * df[[rgr]]
+      df[[paste0('ThinThin:', rgr)]] = df$ThinThin * df[[rgr]]
+    }
+  }
+  
+  ## If there was a Burn:Thin:regressor interaction, add this column to the 
+  ## predictor dataframe
+  if(paste0('BurnBurn:ThinThin:',rgr) %in% out_pft$Treatment){
+    df[[paste0('BurnBurn:ThinThin:',rgr)]] = df$BurnBurn * df[[rgr]] * df$ThinThin
+  }
+  
+  ## Add a Treatment column
+  df$Treatment <- "Control"
+  df[df$BurnBurn==1 & df$ThinThin == 0, 'Treatment'] = 'Burn'
+  df[df$BurnBurn==1 & df$ThinThin == 1, 'Treatment'] = 'Thin+Burn'
+  df[df$BurnBurn==0 & df$ThinThin == 1, 'Treatment'] = 'Thin'
+  
+  ## Use the predictor dataframe to predict growth 
+  pred <- predict(allPFToutputs[[2]][[p]], newmods = as.matrix(df[1:(length(df)-1)])) # Drop treatment column for the prediction
+  pred$var <- df[[rgr]]
+  pred$Treatment <- df$Treatment ## Add treatment column back to the predicted values
+  pred$PFT <- pft_dict[[p]] ## Use PFT aliases
+  
+  ## Add the regressor center to the dataframe
+  pred$rgr_cntr <- attr(pmod$data[[rgr]], 'scaled:center')
+  
+  ## Return a dataframe
+  out <- as.data.frame(pred)
+  colnames(out)[colnames(out) == 'var'] = rgr
+  return(out)
+}
+
+
+### Function to loop through PFT models and compile a dataframe containing the
+### x and y values needed to plot a regression line for each model. 
+make_regLine_allPFTs <- function(
+    allPFToutputs, ## full set of outputs from `make_meta_df`
+    rgr, ## name of regressor
+    sgnf ## significance level
+){
+  
+  out_df <- data.frame()
+  
+  for(p in names(allPFToutputs[[2]])){
+    ## Get the significant regression line dataframe for each PFT
+    out_df <- rbind(out_df, regLine_onePFT(allPFToutputs = allPFToutputs, rgr = rgr, p = p, sgnf = sgnf))
+  }
+  
+  ## Return if the dataframe is empty
+  if(nrow(out_df)==0){
+    return(data.frame())
+  }
+  
+  ## Beautify treatment names
+  out_df[out_df$Treatment =='BurnBurn', 'Treatment'] = 'Burn'
+  out_df[out_df$Treatment == 'ThinThin', 'Treatment'] = 'Thin'
+  out_df[out_df$Treatment == 'BurnBurn:ThinThin', 'Treatment'] = 'Thin+Burn'
+  
+  return(out_df)
+}
+  
+
