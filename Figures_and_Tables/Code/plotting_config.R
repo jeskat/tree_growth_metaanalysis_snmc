@@ -1,5 +1,9 @@
 ### This file provides mappings for plotting styles and nomenclatures
 
+## List of sites included in analysis
+site_list <- c('Blodgett', 'LaTour', 'Sequoia', 'STEF', 
+  'Teakettle', 'TharpsCreek', 'WLakeTahoe')
+
 ## File directories for figures and tables
 fig_dir <- 'Figures_and_Tables/Figures/'
 tbl_dir <- 'Figures_and_Tables/Tables/'
