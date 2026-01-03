@@ -41,7 +41,8 @@ trt_cols <- list(None = 'grey',
                  `Thin+Burn` = '#42017C',
                  Control = '#787276', 
                  `Burn:Thin Interaction` = '#42017C',
-                 `Thin:Burn Interaction` = '#42017C')
+                 `Thin:Burn Interaction` = '#42017C',
+                 `Thin x Burn` = '#42017C')
 
 
 ## Site shapes

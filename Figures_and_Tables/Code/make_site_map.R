@@ -9,6 +9,8 @@ library(ggspatial)
 library(dplyr)
 library(purrr)
 
+source(here::here('Figures_and_Tables/Code/plotting_config.R'))
+
 ## Load polygons for each unit
 plot_poly <- st_read(
   'Covariate_and_metaregressor_processing/Input_data/unit_polygons.shp')
@@ -43,9 +45,12 @@ site_centroids <- plots_projected %>%
     center_x = map_dbl(bbox, ~ (.x["xmin"] + .x["xmax"]) / 2),
     center_y = map_dbl(bbox, ~ (.x["ymin"] + .x["ymax"]) / 2)
   ) %>%
+  # Remove the MultiPolygon geometry column
+  st_drop_geometry() %>% 
+  # Remove the bbox list column (optional, for a cleaner table)
+  select(-bbox) %>% 
   # Convert the calculated X/Y into a point geometry
-  st_as_sf(coords = c("center_x", "center_y"), crs = st_crs(plots))
-
+  st_as_sf(coords = c("center_x", "center_y"), crs = st_crs(plots_projected))
 
 
 # Add experiment attributes -----------------------------------------------
@@ -60,7 +65,7 @@ site_centroids[site_centroids$Site %in% c('Blodgett', 'STEF', 'Teakettle'),
 
 ## Add the number of observations at each site
 
-for(site in c('Blodgett', 'LaTour', 'STEF', 'Teakettle', 'WLakeTahoe')){ #
+for(site in site_centroids$Site){ #
   tree_data <- read.csv(here::here('State_space_growth_models/Input_data/',
                                    site,
                                    'tree_attrs.csv'))
@@ -69,21 +74,25 @@ for(site in c('Blodgett', 'LaTour', 'STEF', 'Teakettle', 'WLakeTahoe')){ #
   }else if(site %in% c('LaTour', 'WLakeTahoe')){
       pfts <- tree_data[tree_data$PFT %in% c('fir'),]
   }else if(site=='Sequoia'){
-    tree_data[tree_data$PFT %in% c('cedar', 'fir', 'sugar_pine'),]
+    pfts <- tree_data[tree_data$PFT %in% c('cedar', 'fir', 'sugar_pine'),]
   }else if(site == 'TharpsCreek'){
-    tree_data[tree_data$PFT %in% c('fir', 'sugar_pine'),]
+    pfts <- tree_data[tree_data$PFT %in% c('fir', 'sugar_pine'),]
   }
   
   site_centroids[site_centroids$Site==site, 'Number of observations'] = sum(pfts$n_obs)
 }
 
+
+# Make map ----------------------------------------------------------------
+
 p <- ggplot() +
   geom_spatraster(data = elev_projected, alpha=0.5) + 
   scale_fill_wiki_c() + 
   geom_sf(data = sn_bounds, fill = NA) + 
-  geom_sf(data = site_centroids, aes(size = `Number of observations`, color = Experiment)) + 
-  scale_color_manual(values = c('#D55E00', '#42017C', '#0072B2')) +
-  scale_size_continuous(limits = c(0, 30000), 
+  geom_sf(data = site_centroids, 
+          aes(size = `Number of observations`, color = Experiment)) + 
+  scale_color_manual(values = unlist(trt_cols)) +
+  scale_size_continuous(limits = c(0, 37000), 
                         breaks = c(100, 1000, 10000))+
   annotation_scale(location = 'bl') +
   annotation_north_arrow(location = "bl", which_north = "true", 
@@ -102,4 +111,6 @@ p <- ggplot() +
         panel.grid.minor = element_blank(),
         panel.grid.major = element_blank())
 
-ggsave('Code/figures/site_map.png', width = 8, height = 6, units ='in')
+ggsave(here::here(fig_dir, 'Fig1_map.jpeg'), 
+       device = 'jpeg', dpi = 'print',
+       width = 8, height = 6, units ='in')
