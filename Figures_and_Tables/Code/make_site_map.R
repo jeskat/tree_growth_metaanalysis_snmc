@@ -15,14 +15,22 @@ source(here::here('Figures_and_Tables/Code/plotting_config.R'))
 plot_poly <- st_read(
   'Covariate_and_metaregressor_processing/Input_data/unit_polygons.shp')
 
-## Load the Sierra Nevada ecoregion boundary
+### Load the Sierra Nevada ecoregion boundary
+## Source: Sierra Nevada Conservancy. 2024. “Sierra Nevada Conservancy Subregions.” 
+## https://gis.data.cnra.ca.gov/datasets/SNC::sierra-nevada-conservancy-subregions/about.
+
 sn_bounds <- st_read(
   'Figures_and_Tables/Map_input_data/Sierra_Nevada_Conservancy_Subregions/Sierra_Nevada_Conservancy_Subregions.shp')
 
 # Dissolve interior polygons
 sn_bounds <- st_union(st_buffer(sn_bounds, 0.0001))
 
-## Load elevation raster
+### Load elevation raster
+## Source: Jarvis, A., H.I. Reuter, A. Nelson, and E. Guevara. 2008. 
+## Hole-Filled Seamless SRTM Data V4. International Centre for Tropical 
+## Agriculture (CIAT). https://srtm.csi.cgiar.org.
+## The original data has been clipped to the boundaries of CA. 
+
 elev <- rast('Figures_and_Tables/Map_input_data/SRTM_clippedCA.tif')
 
 ## Convert to projected coordinate system (CA Albers)
@@ -34,7 +42,7 @@ elev_projected <- project(
   method = "bilinear"      # Use 'bilinear' or 'cubic' for continuous data like elevation
 )
 
-## Find the centroid of each site ------------------------------------------
+# Find the centroid of each site ------------------------------------------
 
 site_centroids <- plots_projected %>%
   group_by(Site) %>% 
