@@ -132,31 +132,13 @@ pretty_nms <- list(
 ## Mapping of metaregressor names
 pretty_mrs <- list(
   BA_reduction= 'Treatment intensity (% basal area reduction)',
-  Elevation='Elevation (m)',
-  tempC= 'Average summer maximum temperature (°C)',
   tmax_by_waterYr = 'Average summer maximum \ntemperature (°C)',
-  precipitation_amount= 'Average winter \nprecipitation (mm)',
   ppt_by_waterYr = 'Average winter \nprecipitation (mm)',
-  snow_duration_days= 'Average snow duration (days)',
-  terraclimate_cwd_annual= 'Average annual CWD (mm)',
-  terraclimate_pdsi_annual= 'Average annual PDSI',
   cwd_by_waterYr = 'Average annual CWD (mm)',
   pdsi_by_waterYr = 'Average annual PDSI',
   TotalDepth= 'Soil depth (cm)',
-  CEC_50cm= 'CEC in top 50cm (meq/100g)',
-  OM_50cm= 'Organic matter \n(% by weight)',
-  ksat_50cm= "Hydraulic conductivity \nin top 50 cm (um/s)",
   AWC_50cm = "Available water capacity \nin top 50 cm (cm/cm)",
-  AWS150 = "Available water storage in top 150 cm (cm)",
-  `Number.of.entries` = 'Number of entries',
-  BAperTree_m2ha = 'Mean post-treatment basal area (m2/ha)', 
-  Slope = "Slope (%)",
-  Folded_aspect = 'Folded aspect (degrees)',
-  Folded_northness = 'Folded aspect (degrees)',
-  Latitude = 'Latitude (degrees North)',
-  Heat_load = 'Heat load index',
-  rSDI = 'Relative stand density index',
-  rSDI_calfire = 'Relative stand density index'
+  rSDI = 'Relative stand density index'
 )
 
 ## Shorthand metaregressor names for correlation plot
@@ -164,31 +146,13 @@ corrplot_shorthand <- list(
   'Site' = 'Site',
   'Treatment' = 'Treatment',
   'BA_reduction' = "Intensity",
-  'Elevation' = 'Elevation',
-  'tempC' = 'Max summer temp',
-  'precipitation_amount' = 'Winter precip',
-  'snow_duration_days' = 'Snow duration',
-  'terraclimate_cwd_annual' = 'CWD',
-  'terraclimate_pdsi_annual' = 'PDSI',
   'tmax_by_waterYr' = 'Max summer temp',
   'ppt_by_waterYr' = 'Winter precip',
   'cwd_by_waterYr' = 'CWD',
   'pdsi_by_waterYr' = 'PDSI',
   'TotalDepth' = 'Soil depth',
-  'CEC_50cm' = 'CEC',
-  'OM_50cm' = "Organic matter",
-  'ksat_50cm' = 'Hydraulic conductivity',
   'AWC_50cm' = 'AWC',
-  'AWS150' = 'AWS',
-  'Number.of.entries' = 'Number of entries',
-  'BAperTree_m2ha' = 'Basal area',
-  'Slope' = 'Slope',
-  'Folded_aspect' = 'Folded aspect',
-  'Folded_northness' = 'Folded aspect',
-  'Latitude' = 'Latitude',
-  'Heat_load' = 'Heat load',
-  'rSDI' = 'rSDI',
-  'rSDI_calfire' = 'rSDI'
+  'rSDI' = 'rSDI'
 )
 
 ## Order of SSM parameters

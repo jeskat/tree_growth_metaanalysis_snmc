@@ -225,36 +225,6 @@ ggsave(here::here(fig_dir, 'mtrgr_ppt.jpeg'),
        width = width, height = height, scale = scale, units = 'in')
 
 
-# Summer maximum temperature----------------------------------------------------
-
-mr_tmax <- make_meta_df(full_data = unit_effects, 
-                        cv_list = unit_cov_m,
-                        formula = ~(Burn*Thin*tmax_by_waterYr), 
-                        by_unit = TRUE,
-                        mtrgrsn = TRUE,
-                        regressor = 'tmax_by_waterYr',
-                        rgr_df = rgrs_by_unit_raw)
-
-
-tmax_tbl <- make_results_table(mr_tmax[[2]], by_unit = TRUE)
-tmax_tbl <- beautify_table_labels(tmax_tbl, 'tmax_by_waterYr')
-
-tmax_plot <- plotMetaRegression(mr_tmax,
-                                rgr = 'tmax_by_waterYr', 
-                                sgnf = sgnf, 
-                                by_unit=TRUE, 
-                                uncenter = TRUE) 
-print(tmax_plot)
-
-write.csv(tmax_tbl, here::here(tbl_dir, 'mtrgr_tmax.csv'), row.names = FALSE)
-
-ggsave(here::here(fig_dir, 'mtrgr_tmax.jpeg'),
-       tmax_plot +coord_cartesian(clip = 'off') + 
-         xlab('Average summer maximum temperature (°C)'), 
-       device = 'jpeg', dpi = 'print',
-       width = width, height = height, scale = scale, units = 'in')
-
-
 # Climate Water Deficit---------------------------------------------------------
 
 mr_cwd <- make_meta_df(full_data = unit_effects, 
@@ -369,65 +339,3 @@ ggsave(here::here(fig_dir, 'mtrgr_awc.jpeg'),
          xlab('Available water capacity in top 50 cm (cm/cm)'), 
        device = 'jpeg', dpi = 'print',
        width = width, height = height, scale = scale, units = 'in')
-
-
-# Hydraulic conductivity in the top 50cm of soil--------------------------------
-
-mr_ksat <- make_meta_df(full_data = unit_effects, 
-                        cv_list = unit_cov_m,
-                        formula = ~(Burn*Thin*ksat_50cm), 
-                        by_unit = TRUE,
-                        mtrgrsn = TRUE,
-                        regressor = 'ksat_50cm',
-                        rgr_df = rgrs_by_unit_raw)
-
-
-ksat_tbl <- make_results_table(mr_ksat[[2]], by_unit = TRUE)
-ksat_tbl <- beautify_table_labels(ksat_tbl, 'ksat_50cm')
-
-ksat_plot <- plotMetaRegression(mr_ksat,
-                                rgr = 'ksat_50cm', 
-                                sgnf = sgnf, 
-                                by_unit=TRUE, 
-                                uncenter = TRUE) 
-print(ksat_plot)
-
-write.csv(ksat_tbl, here::here(tbl_dir, 'mtrgr_ksat.csv'), row.names = FALSE)
-
-ggsave(here::here(fig_dir, 'mtrgr_ksat.jpeg'),
-       ksat_plot +coord_cartesian(clip = 'off') + 
-         xlab('Hydraulic conductivity in top 50 cm (um/s)'), 
-       device = 'jpeg', dpi = 'print',
-       width = width, height = height, scale = scale, units = 'in')
-
-
-# Cation exchange capacity in the top 50cm of soil------------------------------
-
-mr_cec <- make_meta_df(full_data = unit_effects, 
-                       cv_list = unit_cov_m,
-                       formula = ~(Burn*Thin*CEC_50cm), 
-                       by_unit = TRUE,
-                       mtrgrsn = TRUE,
-                       regressor = 'CEC_50cm',
-                       rgr_df = rgrs_by_unit_raw)
-
-
-cec_tbl <- make_results_table(mr_cec[[2]], by_unit = TRUE)
-cec_tbl <- beautify_table_labels(cec_tbl, 'CEC_50cm')
-
-cec_plot <- plotMetaRegression(mr_cec,
-                               rgr = 'CEC_50cm', 
-                               sgnf = sgnf, 
-                               by_unit=TRUE, 
-                               uncenter = TRUE) 
-print(cec_plot)
-
-write.csv(cec_tbl, here::here(tbl_dir, 'mtrgr_cec.csv'), row.names = FALSE)
-
-ggsave(here::here(fig_dir, 'mtrgr_cec.jpeg'),
-       cec_plot +coord_cartesian(clip = 'off'),
-       device = 'jpeg', dpi = 'print',
-       width = width, height = height, scale = scale, units = 'in')
-
-
-
