@@ -408,3 +408,43 @@ beautify_table_labels <- function(
   return(mr_tbl)
 }
 
+
+## Function to construct metaregressor boxplots
+make_rgr_boxplot <- function(rgr, rgr_tbl){
+  prty_rgr <- pretty_mrs[[rgr]]
+  p <- ggplot(rgr_tbl,
+              aes(x = fct_reorder(Site, get(prty_rgr), .desc = TRUE), 
+                  y=get(prty_rgr)))+ 
+    geom_boxplot(outliers = FALSE) +
+    geom_jitter(aes(shape=Treatment), position = position_jitter(0.2)) +
+    scale_shape_manual(values = trt_shapes) +
+    xlab('') +
+    ylab(pretty_mrs[[rgr]]) + 
+    theme_minimal(base_size = 14) +
+    theme(axis.line = element_line(color='black'), 
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank(), 
+          axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = 'bottom'
+    )
+  
+  return(p)
+}
+
+## Function to construct meta regressor point plots
+make_rgr_pointPlot <- function(rgr, rgr_tbl){
+  p <- ggplot(rgr_tbl,
+              aes(x = fct_reorder(Site, get(rgr), .desc = TRUE), y=get(rgr))) + 
+    geom_point(size = 3, shape = 1) +
+    xlab('') +
+    ylab(pretty_mrs[[rgr]]) + 
+    theme_minimal(base_size = 14) +
+    theme(axis.line = element_line(color='black'), 
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank(), 
+          axis.text.x = element_text(angle = 45, hjust = 1),
+    )
+  
+  return(p)
+}
+
