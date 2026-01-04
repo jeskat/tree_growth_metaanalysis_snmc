@@ -130,8 +130,8 @@ dbh_plot <- dbh_plot + xlab('DBH (cm)')
 
 print(dbh_plot)
 
-ggsave(here::here('Figures_and_Tables/Figures/Fig3_growth_vs_dbh.png'), 
-       plot = dbh_plot, device = 'png',
+ggsave(here::here(fig_dir, 'Fig3_growth_vs_dbh.jpeg'), 
+       plot = dbh_plot, device = 'jpeg', dpi = 'print',
        width = 6.5, height = 6.5, units = 'in')
 
 
@@ -154,8 +154,8 @@ cwd_plot <- cwd_plot + xlab("Measurement period CWD (standard deviations from si
 
 print(cwd_plot)
 
-ggsave(here::here('Figures_and_Tables/Figures/Fig4_growth_vs_cwd.png'), 
-       plot = cwd_plot, device = 'png',
+ggsave(here::here(fig_dir, 'Fig4_growth_vs_cwd.jpeg'), 
+       plot = cwd_plot, device = 'jpeg', dpi = 'print',
        width = 6.5, height = 6.5, units = 'in')
 
 ###-----------------------------------------------------------------------------
@@ -234,7 +234,7 @@ heatmap = heatmap + facet_grid(PFT~factor(Effect,
 
 print(heatmap)
 
-ggsave(here::here('Figures_and_Tables/Figures/Fig5_faceted_heatmap.png'), 
-       plot = heatmap, device = 'png',
+ggsave(here::here(fig_dir, 'Fig5_faceted_heatmap.jpeg'), 
+       plot = heatmap, device = 'jpeg', dpi = 'print',
        width = 7, height = 8.5, units = 'in')
 

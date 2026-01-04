@@ -131,7 +131,7 @@ sizeMeta <- ggarrange(cntrlSize, trtSize,
 
 ## Panel E
 cntrlCWD <- plot_meta_analysis(meta_cwd[[1]], 
-                               axis_label = "Effect of measurement period CWD on growth",
+                               axis_label = "Effect of measurement \nperiod CWD on growth",
                                control = TRUE,
                                zero_line = TRUE)
 
@@ -157,7 +157,8 @@ fig2 <- ggarrange(growthMeta, sizeMeta, cwdMeta,
 
 print(fig2)
 
-ggsave(here::here('Figures_and_Tables/Figures/Fig2_pooled_effects.png'), plot = fig2, device = 'png',
+ggsave(here::here(fig_dir, 'Fig2_pooled_effects.jpeg'), 
+       plot = fig2, device = 'jpeg', dpi = 'print',
        width = 8, height = 8, units = 'in')
 
 ###-----------------------------------------------------------------------------
