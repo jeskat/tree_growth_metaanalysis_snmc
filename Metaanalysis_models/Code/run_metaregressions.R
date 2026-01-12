@@ -56,6 +56,152 @@ rgrs_by_unit_raw$common_nm <- factor(rgrs_by_unit_raw$common_nm, site_order)
 
 
 
+# Winter precipitation ----------------------------------------------------
+
+mr_ppt <- make_meta_df(full_data = unit_effects, 
+                       cv_list = unit_cov_m,
+                       formula = ~(Burn*Thin*ppt_by_waterYr), 
+                       by_unit = TRUE,
+                       mtrgrsn = TRUE,
+                       regressor = 'ppt_by_waterYr',
+                       rgr_df = rgrs_by_unit_raw)
+
+
+ppt_tbl <- make_results_table(mr_ppt[[2]], by_unit = TRUE)
+ppt_tbl <- beautify_table_labels(ppt_tbl, 'ppt_by_waterYr')
+
+ppt_plot <- plotMetaRegression(mr_ppt,
+                               rgr = 'ppt_by_waterYr', 
+                               sgnf = sgnf, 
+                               by_unit=TRUE, 
+                               uncenter = TRUE) 
+print(ppt_plot)
+
+write.csv(ppt_tbl, here::here(tbl_dir, 'TabS11_mtrgr_ppt.csv'), row.names = FALSE)
+
+ggsave(here::here(fig_dir, 'FigS9_mtrgr_ppt.jpeg'),
+       ppt_plot +coord_cartesian(clip = 'off') + 
+         xlab('Average winter precipitation (mm)'), 
+       device = 'jpeg', dpi = 'print',
+       width = width, height = height, scale = scale, units = 'in')
+
+
+# Climate Water Deficit---------------------------------------------------------
+
+mr_cwd <- make_meta_df(full_data = unit_effects, 
+                       cv_list = unit_cov_m,
+                       formula = ~(Burn*Thin*cwd_by_waterYr), 
+                       by_unit = TRUE,
+                       mtrgrsn = TRUE,
+                       regressor = 'cwd_by_waterYr',
+                       rgr_df = rgrs_by_unit_raw)
+
+
+cwd_tbl <- make_results_table(mr_cwd[[2]], by_unit = TRUE)
+cwd_tbl <- beautify_table_labels(cwd_tbl, 'cwd_by_waterYr')
+
+cwd_plot <- plotMetaRegression(mr_cwd,
+                               rgr = 'cwd_by_waterYr', 
+                               sgnf = sgnf, 
+                               by_unit=TRUE, 
+                               uncenter = TRUE) 
+print(cwd_plot)
+
+write.csv(cwd_tbl, here::here(tbl_dir, 'TabS12_mtrgr_cwd.csv'), row.names = FALSE)
+
+ggsave(here::here(fig_dir, 'FigS10_mtrgr_cwd.jpeg'),
+       cwd_plot +coord_cartesian(clip = 'off'), 
+       device = 'jpeg', dpi = 'print',
+       width = width, height = height, scale = scale, units = 'in')
+
+
+# Palmer Drought Severity Index-------------------------------------------------
+
+mr_pdsi <- make_meta_df(full_data = unit_effects, 
+                        cv_list = unit_cov_m,
+                        formula = ~(Burn*Thin*pdsi_by_waterYr), 
+                        by_unit = TRUE,
+                        mtrgrsn = TRUE,
+                        regressor = 'pdsi_by_waterYr',
+                        rgr_df = rgrs_by_unit_raw)
+
+
+pdsi_tbl <- make_results_table(mr_pdsi[[2]], by_unit = TRUE)
+pdsi_tbl <- beautify_table_labels(pdsi_tbl, 'pdsi_by_waterYr')
+
+pdsi_plot <- plotMetaRegression(mr_pdsi,
+                                rgr = 'pdsi_by_waterYr', 
+                                sgnf = sgnf, 
+                                by_unit=TRUE, 
+                                uncenter = TRUE) 
+print(pdsi_plot)
+
+write.csv(pdsi_tbl, here::here(tbl_dir, 'TabS13_mtrgr_pdsi.csv'), row.names = FALSE)
+
+ggsave(here::here(fig_dir, 'FigS11_mtrgr_pdsi.jpeg'),
+       pdsi_plot +coord_cartesian(clip = 'off'), 
+       device = 'jpeg', dpi = 'print',
+       width = width, height = height, scale = scale, units = 'in')
+
+
+# Soil depth--------------------------------------------------------------------
+
+mr_depth <- make_meta_df(full_data = unit_effects, 
+                         cv_list = unit_cov_m,
+                         formula = ~(Burn*Thin*TotalDepth), 
+                         by_unit = TRUE,
+                         mtrgrsn = TRUE,
+                         regressor = 'TotalDepth',
+                         rgr_df = rgrs_by_unit_raw)
+
+
+depth_tbl <- make_results_table(mr_depth[[2]], by_unit = TRUE)
+depth_tbl <- beautify_table_labels(depth_tbl, 'TotalDepth')
+
+depth_plot <- plotMetaRegression(mr_depth,
+                                 rgr = 'TotalDepth', 
+                                 sgnf = sgnf, 
+                                 by_unit=TRUE, 
+                                 uncenter = TRUE) 
+print(depth_plot)
+
+write.csv(depth_tbl, here::here(tbl_dir, 'TabS14_mtrgr_depth.csv'), row.names = FALSE)
+
+ggsave(here::here(fig_dir, 'FigS12_mtrgr_depth.jpeg'),
+       depth_plot +coord_cartesian(clip = 'off'), 
+       device = 'jpeg', dpi = 'print',
+       width = width, height = height, scale = scale, units = 'in')
+
+# Available water capacity (AWC) in the top 50cm of soil------------------------
+
+mr_awc <- make_meta_df(full_data = unit_effects, 
+                       cv_list = unit_cov_m,
+                       formula = ~(Burn*Thin*AWC_50cm), 
+                       by_unit = TRUE,
+                       mtrgrsn = TRUE,
+                       regressor = 'AWC_50cm',
+                       rgr_df = rgrs_by_unit_raw)
+
+
+awc_tbl <- make_results_table(mr_awc[[2]], by_unit = TRUE)
+awc_tbl <- beautify_table_labels(awc_tbl, 'AWC_50cm')
+
+awc_plot <- plotMetaRegression(mr_awc,
+                               rgr = 'AWC_50cm', 
+                               sgnf = sgnf, 
+                               by_unit=TRUE, 
+                               uncenter = TRUE) 
+print(awc_plot)
+
+write.csv(awc_tbl, here::here(tbl_dir, 'TabS15_mtrgr_awc.csv'), row.names = FALSE)
+
+ggsave(here::here(fig_dir, 'FigS13_mtrgr_awc.jpeg'),
+       awc_plot +coord_cartesian(clip = 'off') + 
+         xlab('Available water capacity in top 50 cm (cm/cm)'), 
+       device = 'jpeg', dpi = 'print',
+       width = width, height = height, scale = scale, units = 'in')
+
+
 # Relative stand density index (rSDI) -------------------------------------
 
 mr_rsdi <- make_meta_df(full_data = unit_effects, 
@@ -77,9 +223,10 @@ rsdi_plot <- plotMetaRegression(mr_rsdi,
                                 uncenter = TRUE) 
 print(rsdi_plot)
 
-write.csv(rsdi_tbl, here::here(tbl_dir, 'mtrgr_rsdi.csv'), row.names = FALSE)
+write.csv(rsdi_tbl, here::here(tbl_dir, 'TabS16_mtrgr_rsdi.csv'), 
+          row.names = FALSE)
 
-ggsave(here::here(fig_dir, 'mtrgr_rsdi.jpeg'),
+ggsave(here::here(fig_dir, 'FigS14_mtrgr_rsdi.jpeg'),
        rsdi_plot +coord_cartesian(clip = 'off'), device = 'jpeg',
        dpi = 'print',
        width = 6.5, height = 8, units = 'in')
@@ -89,35 +236,35 @@ ggsave(here::here(fig_dir, 'mtrgr_rsdi.jpeg'),
 
 ## rSDI regression without a treatment variable
 mr_rsdi_noTrt <- make_meta_df(full_data = unit_effects, 
-                                         cv_list = unit_cov_m,
-                                         formula = ~(rSDI), 
-                                         by_unit = TRUE,
-                                         mtrgrsn = TRUE,
-                                         regressor = 'rSDI',
-                                         rgr_df = rgrs_by_unit_raw)
+                              cv_list = unit_cov_m,
+                              formula = ~(rSDI), 
+                              by_unit = TRUE,
+                              mtrgrsn = TRUE,
+                              regressor = 'rSDI',
+                              rgr_df = rgrs_by_unit_raw)
 
 
 mr_rsdi_noTrt_tbl <- make_results_table(mr_rsdi_noTrt[[2]], by_unit = TRUE)
 mr_rsdi_noTrt_tbl <- beautify_table_labels(mr_rsdi_noTrt_tbl, 'rSDI')
 
-write.csv(mr_rsdi_noTrt_tbl, here::here(tbl_dir, 'mtrgr_rsdi_noTrt.csv'), 
+write.csv(mr_rsdi_noTrt_tbl, here::here(tbl_dir, 'TabS17_mtrgr_rsdi_noTrt.csv'), 
           row.names = FALSE)
 
 # rSDI without a treatment:rSDI interaction-------------------------------------
 
 mr_rsdi_noIrctn <- make_meta_df(full_data = unit_effects, 
-                        cv_list = unit_cov_m,
-                        formula = ~(Burn*Thin+rSDI), 
-                        by_unit = TRUE,
-                        mtrgrsn = TRUE,
-                        regressor = 'rSDI',
-                        rgr_df = rgrs_by_unit_raw)
+                                cv_list = unit_cov_m,
+                                formula = ~(Burn*Thin+rSDI), 
+                                by_unit = TRUE,
+                                mtrgrsn = TRUE,
+                                regressor = 'rSDI',
+                                rgr_df = rgrs_by_unit_raw)
 
 
 rsdi_noIrctn_tbl <- make_results_table(mr_rsdi_noIrctn[[2]], by_unit = TRUE)
 rsdi_noIrctn_tbl <- beautify_table_labels(rsdi_noIrctn_tbl, 'rSDI')
 
-write.csv(rsdi_noIrctn_tbl, here::here(tbl_dir, 'mtrgr_rsdi_noIrctn.csv'), 
+write.csv(rsdi_noIrctn_tbl, here::here(tbl_dir, 'TabS18_mtrgr_rsdi_noIrctn.csv'), 
           row.names = FALSE)
 
 
@@ -126,7 +273,7 @@ write.csv(rsdi_noIrctn_tbl, here::here(tbl_dir, 'mtrgr_rsdi_noIrctn.csv'),
 
 ## Remove all thinning treatments and sites that did not burn
 burn_only <- unit_effects[unit_effects$Treatment %in% c('None', 'Burn') & 
-                      !(unit_effects$common_nm %in% c('W. Lake Tahoe', 'LaTour')),]
+                            !(unit_effects$common_nm %in% c('W. Lake Tahoe', 'LaTour')),]
 
 burn_units <- unique(burn_only$unit)
 
@@ -136,18 +283,18 @@ cov_list_burn <- lapply(unit_cov_m[!(grepl('UPFUb', names(unit_cov_m))) &
                         x[nms,nms]})
 
 mr_rsdi_burn <- make_meta_df(full_data = burn_only, 
-                                cv_list = cov_list_burn,
-                                formula = ~(Burn*rSDI), 
-                                by_unit = TRUE,
-                                mtrgrsn = TRUE,
-                                regressor = 'rSDI',
-                                rgr_df = rgrs_by_unit_raw)
+                             cv_list = cov_list_burn,
+                             formula = ~(Burn*rSDI), 
+                             by_unit = TRUE,
+                             mtrgrsn = TRUE,
+                             regressor = 'rSDI',
+                             rgr_df = rgrs_by_unit_raw)
 
 
 rsdi_burnOnly_tbl <- make_results_table(mr_rsdi_burn[[2]], by_unit = TRUE)
 rsdi_burnOnly_tbl <- beautify_table_labels(rsdi_burnOnly_tbl, 'rSDI')
 
-write.csv(rsdi_burnOnly_tbl, here::here(tbl_dir, 'mtrgr_rsdi_burnOnly.csv'), 
+write.csv(rsdi_burnOnly_tbl, here::here(tbl_dir, 'TabS19_mtrgr_rsdi_burnOnly.csv'), 
           row.names = FALSE)
 
 
@@ -156,7 +303,7 @@ write.csv(rsdi_burnOnly_tbl, here::here(tbl_dir, 'mtrgr_rsdi_burnOnly.csv'),
 
 ## Remove all burn treatments and sites that did not thin
 thin_only <- unit_effects[unit_effects$Treatment %in% c('None', 'Thin') & 
-                      !(unit_effects$common_nm %in% c('Sequoia', "Tharp's Creek")),]
+                            !(unit_effects$common_nm %in% c('Sequoia', "Tharp's Creek")),]
 
 thin_units <- unique(thin_only$unit)
 
@@ -190,152 +337,58 @@ mr_rsdi_thin <- make_meta_df(full_data = thin_only,
 rsdi_thinOnly_tbl <- make_results_table(mr_rsdi_thin[[2]], by_unit = TRUE)
 rsdi_thinOnly_tbl <- beautify_table_labels(rsdi_thinOnly_tbl, 'rSDI')
 
-write.csv(rsdi_thinOnly_tbl, here::here(tbl_dir, 'mtrgr_rsdi_thinOnly.csv'), 
+write.csv(rsdi_thinOnly_tbl, here::here(tbl_dir, 'TabS20_mtrgr_rsdi_thinOnly.csv'), 
           row.names = FALSE)
 
 
+# Intensity (basal area reduction) ----------------------------------------
+## Remove LaTour, which did not have reliable pre-treatment BA measurements
 
-# Winter precipitation ----------------------------------------------------
+no_Lt <- unit_effects[unit_effects$common_nm!='LaTour',]
 
-mr_ppt <- make_meta_df(full_data = unit_effects, 
-                       cv_list = unit_cov_m,
-                       formula = ~(Burn*Thin*ppt_by_waterYr), 
-                       by_unit = TRUE,
-                       mtrgrsn = TRUE,
-                       regressor = 'ppt_by_waterYr',
-                       rgr_df = rgrs_by_unit_raw)
+cov_list_noLT <-unit_cov_m[!(grepl('LaTour', names(unit_cov_m)))]
 
 
-ppt_tbl <- make_results_table(mr_ppt[[2]], by_unit = TRUE)
-ppt_tbl <- beautify_table_labels(ppt_tbl, 'ppt_by_waterYr')
-
-ppt_plot <- plotMetaRegression(mr_ppt,
-                               rgr = 'ppt_by_waterYr', 
-                               sgnf = sgnf, 
-                               by_unit=TRUE, 
-                               uncenter = TRUE) 
-print(ppt_plot)
-
-write.csv(ppt_tbl, here::here(tbl_dir, 'mtrgr_ppt.csv'), row.names = FALSE)
-
-ggsave(here::here(fig_dir, 'mtrgr_ppt.jpeg'),
-       ppt_plot +coord_cartesian(clip = 'off') + 
-         xlab('Average winter precipitation (mm)'), 
-       device = 'jpeg', dpi = 'print',
-       width = width, height = height, scale = scale, units = 'in')
-
-
-# Climate Water Deficit---------------------------------------------------------
-
-mr_cwd <- make_meta_df(full_data = unit_effects, 
-                       cv_list = unit_cov_m,
-                       formula = ~(Burn*Thin*cwd_by_waterYr), 
-                       by_unit = TRUE,
-                       mtrgrsn = TRUE,
-                       regressor = 'cwd_by_waterYr',
-                       rgr_df = rgrs_by_unit_raw)
-
-
-cwd_tbl <- make_results_table(mr_cwd[[2]], by_unit = TRUE)
-cwd_tbl <- beautify_table_labels(cwd_tbl, 'cwd_by_waterYr')
-
-cwd_plot <- plotMetaRegression(mr_cwd,
-                               rgr = 'cwd_by_waterYr', 
-                               sgnf = sgnf, 
-                               by_unit=TRUE, 
-                               uncenter = TRUE) 
-print(cwd_plot)
-
-write.csv(cwd_tbl, here::here(tbl_dir, 'mtrgr_cwd.csv'), row.names = FALSE)
-
-ggsave(here::here(fig_dir, 'mtrgr_cwd.jpeg'),
-       cwd_plot +coord_cartesian(clip = 'off'), 
-       device = 'jpeg', dpi = 'print',
-       width = width, height = height, scale = scale, units = 'in')
-
-
-# Palmer Drought Severity Index-------------------------------------------------
-
-mr_pdsi <- make_meta_df(full_data = unit_effects, 
-                        cv_list = unit_cov_m,
-                        formula = ~(Burn*Thin*pdsi_by_waterYr), 
+mr_intensity <- make_meta_df(full_data = no_Lt, 
+                        cv_list = cov_list_noLT,
+                        formula = ~(Burn*Thin*BA_reduction), 
                         by_unit = TRUE,
                         mtrgrsn = TRUE,
-                        regressor = 'pdsi_by_waterYr',
+                        regressor = 'BA_reduction',
                         rgr_df = rgrs_by_unit_raw)
 
 
-pdsi_tbl <- make_results_table(mr_pdsi[[2]], by_unit = TRUE)
-pdsi_tbl <- beautify_table_labels(pdsi_tbl, 'pdsi_by_waterYr')
+intensity_tbl <- make_results_table(mr_intensity[[2]], by_unit = TRUE)
+intensity_tbl <- beautify_table_labels(intensity_tbl, 'BA_reduction')
 
-pdsi_plot <- plotMetaRegression(mr_pdsi,
-                                rgr = 'pdsi_by_waterYr', 
+intensity_plot <- plotMetaRegression(mr_intensity,
+                                rgr = 'BA_reduction', 
                                 sgnf = sgnf, 
                                 by_unit=TRUE, 
                                 uncenter = TRUE) 
-print(pdsi_plot)
+print(intensity_plot)
 
-write.csv(pdsi_tbl, here::here(tbl_dir, 'mtrgr_pdsi.csv'), row.names = FALSE)
+write.csv(intensity_tbl, here::here(tbl_dir, 'TabS21_mtrgr_intensity.csv'), 
+          row.names = FALSE)
 
-ggsave(here::here(fig_dir, 'mtrgr_pdsi.jpeg'),
-       pdsi_plot +coord_cartesian(clip = 'off'), 
-       device = 'jpeg', dpi = 'print',
-       width = width, height = height, scale = scale, units = 'in')
-
-
-# Soil depth--------------------------------------------------------------------
-
-mr_depth <- make_meta_df(full_data = unit_effects, 
-                         cv_list = unit_cov_m,
-                         formula = ~(Burn*Thin*TotalDepth), 
-                         by_unit = TRUE,
-                         mtrgrsn = TRUE,
-                         regressor = 'TotalDepth',
-                         rgr_df = rgrs_by_unit_raw)
+ggsave(here::here(fig_dir, 'FigS15_mtrgr_intensity.jpeg'),
+       intensity_plot +coord_cartesian(clip = 'off'), device = 'jpeg',
+       dpi = 'print',
+       width = 6.5, height = 8, units = 'in')
 
 
-depth_tbl <- make_results_table(mr_depth[[2]], by_unit = TRUE)
-depth_tbl <- beautify_table_labels(depth_tbl, 'TotalDepth')
+# Make summary table ------------------------------------------------------
 
-depth_plot <- plotMetaRegression(mr_depth,
-                                 rgr = 'TotalDepth', 
-                                 sgnf = sgnf, 
-                                 by_unit=TRUE, 
-                                 uncenter = TRUE) 
-print(depth_plot)
+## Concatenate metaregression summaries
+mtr_tbl <- rbind(
+  summarize_metaregression(mr_rsdi, 'rSDI'),
+  summarize_metaregression(mr_ppt, 'ppt_by_waterYr'),
+  summarize_metaregression(mr_cwd, 'cwd_by_waterYr'),
+  summarize_metaregression(mr_pdsi, 'pdsi_by_waterYr'),
+  summarize_metaregression(mr_depth, 'TotalDepth'),
+  summarize_metaregression(mr_awc, 'AWC_50cm')
+)
 
-write.csv(depth_tbl, here::here(tbl_dir, 'mtrgr_depth.csv'), row.names = FALSE)
-
-ggsave(here::here(fig_dir, 'mtrgr_depth.jpeg'),
-       depth_plot +coord_cartesian(clip = 'off'), 
-       device = 'jpeg', dpi = 'print',
-       width = width, height = height, scale = scale, units = 'in')
-
-# Available water capacity (AWC) in the top 50cm of soil------------------------
-
-mr_awc <- make_meta_df(full_data = unit_effects, 
-                       cv_list = unit_cov_m,
-                       formula = ~(Burn*Thin*AWC_50cm), 
-                       by_unit = TRUE,
-                       mtrgrsn = TRUE,
-                       regressor = 'AWC_50cm',
-                       rgr_df = rgrs_by_unit_raw)
-
-
-awc_tbl <- make_results_table(mr_awc[[2]], by_unit = TRUE)
-awc_tbl <- beautify_table_labels(awc_tbl, 'AWC_50cm')
-
-awc_plot <- plotMetaRegression(mr_awc,
-                               rgr = 'AWC_50cm', 
-                               sgnf = sgnf, 
-                               by_unit=TRUE, 
-                               uncenter = TRUE) 
-print(awc_plot)
-
-write.csv(awc_tbl, here::here(tbl_dir, 'mtrgr_awc.csv'), row.names = FALSE)
-
-ggsave(here::here(fig_dir, 'mtrgr_awc.jpeg'),
-       awc_plot +coord_cartesian(clip = 'off') + 
-         xlab('Available water capacity in top 50 cm (cm/cm)'), 
-       device = 'jpeg', dpi = 'print',
-       width = width, height = height, scale = scale, units = 'in')
+write.csv(mtr_tbl,
+          here::here(tbl_dir, 'Tab2_metaregression.csv'), 
+          row.names = FALSE)
