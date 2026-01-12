@@ -279,8 +279,8 @@ get_trt_effects_tbl <- function(full_data,
 #' Creates a dataframe defining significant X-ranges (e.g., DBH or CWD) for plotting.
 #'
 #' @param df The main dataframe containing all data.
-#' @param x_var The unquoted column name for the X-variable (e.g., X_size).
-#' @param alpha The significance threshold (default is 0.05).
+#' @param x_var The unquoted column name for the X-variable (e.g., DBH).
+#' @param alpha The significance threshold.
 #' @return A dataframe with columns: treatment, xstart, xend.
 identify_significant_ranges <- function(df, x_var, alpha = sgnf) {
   data <- df[df$Effect!='Control',]
@@ -288,7 +288,7 @@ identify_significant_ranges <- function(df, x_var, alpha = sgnf) {
   # 1. Flag significance
   data_sig <- data %>%
     mutate(
-      is_significant = pval <= alpha
+      is_significant = signif(pval, digits = 2) <= alpha
     )
   
   # 2. Generate RLE ID for continuous runs of TRUE/FALSE
@@ -458,7 +458,8 @@ regLine_onePFT <- function(
     x <- seq(min(rgr_trt[[rgr]]), max(rgr_trt[[rgr]]), length.out = 100)
     
     ## If the Burn:Thin:regressor interaction is significant
-    if(signif(out_pft[out_pft$Treatment==paste0("BurnBurn:ThinThin:", rgr), 'pval'], 2) <= sgnf){
+    if(signif(out_pft[out_pft$Treatment==paste0("BurnBurn:ThinThin:", rgr), 
+                      'pval'], 2) <= sgnf){
       
       ## Add rows to the predictor dataframe for the Burn+Thin treatment
       df_trt <- data.frame(cbind(BurnBurn = 0, ThinThin = 0, var = x))
@@ -505,7 +506,8 @@ regLine_onePFT <- function(
   df[df$BurnBurn==0 & df$ThinThin == 1, 'Treatment'] = 'Thin'
   
   ## Use the predictor dataframe to predict growth 
-  pred <- predict(allPFToutputs[[2]][[p]], newmods = as.matrix(df[1:(length(df)-1)])) # Drop treatment column for the prediction
+  pred <- predict(allPFToutputs[[2]][[p]], 
+                  newmods = as.matrix(df[1:(length(df)-1)])) # Drop treatment column for the prediction
   pred$var <- df[[rgr]]
   pred$Treatment <- df$Treatment ## Add treatment column back to the predicted values
   pred$PFT <- pft_dict[[p]] ## Use PFT aliases
@@ -532,7 +534,8 @@ make_regLine_allPFTs <- function(
   
   for(p in names(allPFToutputs[[2]])){
     ## Get the significant regression line dataframe for each PFT
-    out_df <- rbind(out_df, regLine_onePFT(allPFToutputs = allPFToutputs, rgr = rgr, p = p, sgnf = sgnf))
+    out_df <- rbind(out_df, regLine_onePFT(allPFToutputs = allPFToutputs, 
+                                           rgr = rgr, p = p, sgnf = sgnf))
   }
   
   ## Return if the dataframe is empty
