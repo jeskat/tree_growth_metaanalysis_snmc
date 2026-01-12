@@ -73,7 +73,7 @@ sizes_filtered <- pft_sizes[(pft_sizes$Site %in% c('Blodgett', 'STEF', 'Teakettl
                              pft_sizes$PFT %in% c('Fir', 'Sugar Pine')),]
 
 ## Order north to south
-sizes_filtered <- sizes_filtered[order(match(sizes_filtered$Site, site_order)),]
+sizes_filtered$Site <- factor(sizes_filtered$Site, site_order)
 
 ## Grouped boxplots
 size_dist <- ggplot(sizes_filtered, 

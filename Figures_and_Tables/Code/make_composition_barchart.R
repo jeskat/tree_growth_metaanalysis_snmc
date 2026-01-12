@@ -31,6 +31,9 @@ site_totals <- all_sites %>%
   group_by(Site, Species) %>%
   summarise(Species_frac = mean(Species_frac))
 
+## Order sites north -> south
+site_totals$Site <- factor(site_totals$Site, levels = rev(site_order))
+
 ## Clean and consolidate species
 
 # Based on the 2020 CFI data, all PIPO/PIJE trees at Latour are PIPO
@@ -73,7 +76,8 @@ barplot <- ggplot(site_totals, aes(fill = Species_plot, y = Species_frac, x = Si
         panel.grid.minor = element_blank(),
         panel.grid.major = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 1))
-  
+
+print(barplot)  
   
 ggsave(here::here(fig_dir, 'FigS4_composition_barchart.jpeg'), 
        plot = barplot, device = 'jpeg', dpi = 'print',
