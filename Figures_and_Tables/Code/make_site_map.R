@@ -106,19 +106,22 @@ p <- ggplot() +
   annotation_north_arrow(location = "bl", which_north = "true", 
                          height = unit(1, 'cm'), width = unit(1, 'cm'), 
                          pad_y = unit(1, 'cm'), pad_x = unit(0.5, 'cm')) +
-  labs(fill= 'Elevation (m)', 
-       color = "Experiment", 
-       size = "Number of observations") +
+  labs(color = "Experiment", 
+       size = "Number of \nobservations",
+       fill= 'Elevation (m)') +
+  
+  guides(color = guide_legend(order = 1),
+         size = guide_legend(order = 2)) +
   
   theme(panel.background = element_rect(fill = NA, colour = 'NA')) +
   theme(axis.line = element_line(color='gray'),
-        axis.text=element_text(size = 14),
-        axis.title = element_text(size = 16),
-        legend.text = element_text(size=14),
-        legend.title = element_text(size = 16),
+        axis.text=element_text(size = 10),
+        axis.title = element_text(size = 12),
+        legend.text = element_text(size=10),
+        legend.title = element_text(size = 12),
         panel.grid.minor = element_blank(),
         panel.grid.major = element_blank())
 
 ggsave(here::here(fig_dir, 'Fig1_map.jpeg'), 
        device = 'jpeg', dpi = 'print',
-       width = 8, height = 6, units ='in')
+       width = 6.5, height = 4.88, units ='in')
