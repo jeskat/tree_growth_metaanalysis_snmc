@@ -26,7 +26,7 @@ make_pft_results_column <- function(
   pft_out <- paste0(signif(mod$beta, 2), 
                     signf, '\n[', 
                     signif(mod$ci.lb, 2), ', ', signif(mod$ci.ub, 2), 
-                    '] \np-value=', signif(mod$pval, 2),  sep = '')
+                    '] \np=', signif(mod$pval, 2),  sep = '')
   
   ## Add a row for tau^2 estimates for random effects variance-covariance matrices  
   pft_out[length(pft_out) + 1] <- signif(mod$sigma2, 2)
@@ -446,5 +446,39 @@ make_rgr_pointPlot <- function(rgr, rgr_tbl){
     )
   
   return(p)
+}
+
+summarize_metaregression <- function(all_models, rgr){
+  ## Subset results; from the summary table, take only the metaregressor and
+  ## its interaction effects
+  rslts <- all_models[[1]][grepl(rgr, all_models[[1]]$Treatment),]
+  
+  ## Round results to two significant figures
+  for(c in colnames(rslts)){
+    if(is.numeric(rslts[[c]]))
+      rslts[[c]] = signif(rslts[[c]], digits = 2)
+  }
+  
+  rslts$Effect <- corrplot_shorthand[[rgr]]
+  rslts[grepl('Burn', rslts$Treatment), 'Effect'] = 'Burn'
+  rslts[grepl('Thin', rslts$Treatment), 'Effect'] = 'Thin'
+  rslts[grepl('Burn:Thin', rslts$Treatment), 'Effect'] = 'Thin:Burn'
+  
+  ## Summarize results: estimate, confidence interval, and p-value
+  rslts <- rslts %>% 
+    mutate(
+      clarity =  case_when(
+        pval <= 0.05 ~ "**",
+        pval > 0.05 & pval <= 0.1 ~ "*",
+        pval > 0.1 ~ ""
+      ),
+      result = paste0(Estimate, '\n[', ci.lb, ', ', ci.ub, ']', clarity)
+    )
+  
+  out <- rslts %>%
+    select(Effect, PFT, result) %>%
+    pivot_wider(names_from = PFT, values_from = result)
+  
+  return(out)
 }
 
