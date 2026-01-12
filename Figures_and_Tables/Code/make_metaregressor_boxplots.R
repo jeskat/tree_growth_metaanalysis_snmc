@@ -51,6 +51,8 @@ for(i in new_colnames){
     rgrs_for_splmnt[[i]] <- signif(rgrs_for_splmnt[[i]], digits = 3)}
 }
 
+# Burn:Thin -> Thin:Burn
+rgrs_for_splmnt[rgrs_for_splmnt$Treatment=='Burn+Thin', 'Treatment'] = 'Thin+Burn'
 
 # Make scatterplots (climate variables) -----------------------------------
 

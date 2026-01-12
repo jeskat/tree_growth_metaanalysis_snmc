@@ -179,7 +179,7 @@ all_dbh_cwd_pvals$DBH_char <- factor(as.character(all_dbh_cwd_pvals$DBH),
                                      levels = as.character(sort(unique(all_dbh_cwd_results$DBH))))
 
 ## Make labels legible
-all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect=="Burn:Thin Interaction", "Effect"] = "Thin:Burn\n Interaction"
+all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect=="Thin:Burn Interaction", "Effect"] = "Thin:Burn\n Interaction"
 
 
 ## Construct heatmap
