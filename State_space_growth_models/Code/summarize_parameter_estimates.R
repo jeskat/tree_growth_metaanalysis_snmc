@@ -57,7 +57,7 @@ mean_ci_ssmParams <-mean_ci_tbl[,c('common_nm', 'PFT', ssm_param_order)]
 
 # Save
 write.csv(apply(mean_ci_ssmParams,2,as.character), 
-          here::here('Figures_and_Tables/Tables/TabE2-E3_mean_ci_ssmParams.csv'),
+          here::here('Figures_and_Tables/Tables/TabS6-S7_mean_ci_ssmParams.csv'),
           row.names = FALSE)
 
 
@@ -141,12 +141,12 @@ m_q <- ggarrange(thinBurnSize, treeSD, plotSD, obsSD, resSD,
 
 ggsave(here::here(fig_dir, 'FigS8_SSM_params_A-F.jpeg'),
        plot = a_f, device = 'jpeg', dpi = 'print',
-       width = 7, height = 8.5, units = 'in')
+       width = 7, height = 8.5, units = 'in', scale = 1.25)
 
 ggsave(here::here(fig_dir, 'FigS8_SSM_params_G-L.jpeg'),
        plot = g_l, device = 'jpeg', dpi = 'print',
-       width = 7, height = 8.5, units = 'in')
+       width = 7, height = 8.5, units = 'in', scale = 1.25)
 
 ggsave(here::here(fig_dir, 'FigS8_SSM_params_M_Q.jpeg'),
        plot = m_q, device = 'jpeg', dpi = 'print',
-       width = 7, height = 8.5, units = 'in')
+       width = 7, height = 8.5, units = 'in', scale = 1.25)

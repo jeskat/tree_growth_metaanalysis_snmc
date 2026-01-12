@@ -10,7 +10,7 @@ tbl_dir <- 'Figures_and_Tables/Tables/'
 
 ## Width and height of metaregression plots
 width = 6.5
-height = 4
+height = 4.2
 scale = 1.25
 
 ## PFT colors

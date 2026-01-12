@@ -176,11 +176,11 @@ cwd_effects_table <- make_results_table(meta_cwd[[2]], by_unit = FALSE)
 
 # Save
 write.csv(pooled_effects_table, 
-          here::here('Figures_and_Tables/Tables/TabF1_pooled_effects_table.csv'),
+          here::here('Figures_and_Tables/Tables/TabS8_pooled_effects_table.csv'),
           row.names = FALSE)
 write.csv(size_effects_table, 
-          here::here('Figures_and_Tables/Tables/TabF2_pooled_size_table.csv'), 
+          here::here('Figures_and_Tables/Tables/TabS9_pooled_size_table.csv'), 
           row.names = FALSE)
 write.csv(cwd_effects_table, 
-          here::here('Figures_and_Tables/Tables/TabF3_pooled_cwd_table.csv'),
+          here::here('Figures_and_Tables/Tables/TabS10_pooled_cwd_table.csv'),
           row.names = FALSE)
