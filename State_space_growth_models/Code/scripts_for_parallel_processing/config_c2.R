@@ -11,19 +11,19 @@
 ### Blodgett
 Blodgett <- list(
   cedar = list(thin_interval = 500,
-               first_run = FALSE,
+               first_run = TRUE,
                n_iter = 2000000), 
   
   yellow_pine = list(thin_interval = 500,
-                     first_run = FALSE,
+                     first_run = TRUE,
                      n_iter = 10000000), 
   
   fir = list(thin_interval = 500, 
-             first_run = FALSE,
+             first_run = TRUE,
              n_iter = 3000000), 
   
   white_pine = list(thin_interval = 500,
-                    first_run = FALSE,
+                    first_run = TRUE,
                     n_iter = 10000000) 
 )
 
