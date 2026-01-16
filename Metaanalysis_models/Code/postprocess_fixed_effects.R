@@ -191,17 +191,17 @@ write.csv(do.call(rbind, unit_growthResults),
                             Sys.Date(), '.csv')), 
           row.names=FALSE)
 
-write.csv(do.call(rbind, site_growthResults), 
-          here::here(paste0('Metaanalysis_models/Reparameterized_SSM_outputs/site_growth_effects_by_trt_', 
-                            Sys.Date(), '.csv')), 
-          row.names=FALSE)
+# write.csv(do.call(rbind, site_growthResults), 
+#           here::here(paste0('Metaanalysis_models/Reparameterized_SSM_outputs/site_growth_effects_by_trt_', 
+#                             Sys.Date(), '.csv')), 
+#           row.names=FALSE)
 
 saveRDS(unit_growthCovs, 
         here::here(paste0('Metaanalysis_models/Reparameterized_SSM_outputs/cov_unit_growth_by_trt_', 
                           Sys.Date(), '.RData')))
 
-saveRDS(site_growthCovs, 
-        here::here(paste0('Metaanalysis_models/Reparameterized_SSM_outputs/cov_site_growth_by_trt_', Sys.Date(), '.RData')))
+# saveRDS(site_growthCovs, 
+#         here::here(paste0('Metaanalysis_models/Reparameterized_SSM_outputs/cov_site_growth_by_trt_', Sys.Date(), '.RData')))
 
 saveRDS(cwdCovs, 
         here::here(paste0('Metaanalysis_models/Reparameterized_SSM_outputs/cov_cwd_by_trt_', Sys.Date(), '.RData')))
