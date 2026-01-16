@@ -23,7 +23,7 @@ allParams <- addPrettyNames(allParams)
 
 
 ###----------------------------------------------------------------------------##
-## Create a Supplementary Tables E2-E3 summarizing parameter estimates from 
+## Create a Tables S6 and S7 summarizing parameter estimates from 
 ## each growth model
 ###----------------------------------------------------------------------------##
 
@@ -62,7 +62,7 @@ write.csv(apply(mean_ci_ssmParams,2,as.character),
 
 
 ###----------------------------------------------------------------------------##
-## Create Supplementary Figure E1 summarizing parameter estimates from each 
+## Create Figure S8 summarizing parameter estimates from each 
 ## growth model
 ###----------------------------------------------------------------------------##
 

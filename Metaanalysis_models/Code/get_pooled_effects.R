@@ -1,5 +1,5 @@
 ###---------------------------------------------------------------------------##
-## Runs meta-analyses and makes Figure 2 and Supplementary Tables F1-F3 
+## Runs meta-analyses and makes Figure 2 and Tables S8-S10 
 ## (Pooled effects of treatment, tree size, measurement period climatic water 
 ## deficit (CWD), and their interactions on tree growth.)
 ###---------------------------------------------------------------------------##

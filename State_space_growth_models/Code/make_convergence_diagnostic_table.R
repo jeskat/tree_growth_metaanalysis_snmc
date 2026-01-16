@@ -1,5 +1,5 @@
 ###----------------------------------------------------------------------------##
-## Create Supplementary Table E1 (Gelman-Rubin statistics for all SSM parameters)
+## Create Supplementary Table S5 (Gelman-Rubin statistics for all SSM parameters)
 ###----------------------------------------------------------------------------##
 
 ### Dependencies
@@ -44,5 +44,5 @@ gr_table <- gr_table %>% arrange(desc(row_number()))
 
 
 write.csv(apply(gr_table,2,as.character), 
-          here::here('Figures_and_Tables/Tables/TabE1_gr_diagnostics.csv'), 
+          here::here('Figures_and_Tables/Tables/TabS5_gr_diagnostics.csv'), 
           row.names = FALSE)
