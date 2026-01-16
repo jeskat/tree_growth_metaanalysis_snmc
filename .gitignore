@@ -45,3 +45,5 @@ create_ssm_diagnostics.*
 # Large files
 *TerraClimate_datafiles/
 *SSURGO_datafiles/
+# Powerpoint files
+*.pptx
