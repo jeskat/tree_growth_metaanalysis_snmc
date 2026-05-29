@@ -8,6 +8,7 @@ library(tidyterra)
 library(ggspatial)
 library(dplyr)
 library(purrr)
+library(scales)
 
 source(here::here('Figures_and_Tables/Code/plotting_config.R'))
 
@@ -110,6 +111,9 @@ p <- ggplot() +
        size = "Number of \nobservations",
        fill= 'Elevation (m)') +
   
+  scale_x_continuous(breaks = breaks_pretty(n = 4)) +
+  scale_y_continuous(breaks = breaks_pretty(n = 2)) +
+  
   guides(color = guide_legend(order = 1),
          size = guide_legend(order = 2)) +
   
@@ -122,6 +126,6 @@ p <- ggplot() +
         panel.grid.minor = element_blank(),
         panel.grid.major = element_blank())
 
-ggsave(here::here(fig_dir, 'Fig1_map.jpeg'), 
-       device = 'jpeg', dpi = 'print',
+ggsave(here::here(fig_dir, 'Fig1_map.tif'), 
+       device = 'tiff', dpi = 600,
        width = 6.5, height = 4.88, units ='in')
