@@ -91,13 +91,12 @@ if(is.null(prior_run_nm) & run_config$first_run==FALSE){
   print('No existing prior run. Aborting.') 
 }else{
   # Create a new directory to store MCMC results from current run.
-  new_dir <- stri_replace_all_regex('Z_Y_W_J_K',pattern = c('Z','Y','W','J','K'), 
-                                    replacement = c(as.character(Sys.Date()),
-                                                    as.character(site), 
-                                                    as.character(model_to_run), 
-                                                    paste0(n_iter/1000,'k'),
-                                                    note),
-                                    vectorize=FALSE)
+  new_dir <- paste(as.character(Sys.Date()),
+                   as.character(site), 
+                   as.character(model_to_run), 
+                   paste0(n_iter/1000,'k'),
+                   note,
+                   sep = '_')
   
   outdir <- file.path(output_file_path,new_dir)
   
@@ -110,15 +109,13 @@ if(is.null(prior_run_nm) & run_config$first_run==FALSE){
   }
   
   # Output file name
-  fileName <- stri_replace_all_regex('Z_Y_X_W_J_K',
-                                     pattern = c('Z','Y','X','W','J', 'K'),
-                                     replacement = c(as.character(Sys.Date()),
-                                                     as.character(site),
-                                                     as.character(pft),
-                                                     as.character(model_to_run),
-                                                     paste0(n_iter/1000,'k'),
-                                                     as.character(note)),
-                                     vectorize=FALSE)
+  fileName <- paste(as.character(Sys.Date()),
+                    as.character(site),
+                    as.character(pft),
+                    as.character(model_to_run),
+                    paste0(n_iter/1000,'k'),
+                    as.character(note), 
+                    sep = '_')
   
   
   
@@ -141,10 +138,7 @@ if(is.null(prior_run_nm) & run_config$first_run==FALSE){
   set.seed(seed)
   
   # Read nimble model file
-  model_file <- stri_replace_all_regex('Z.R', 
-                                       pattern = c('Z'), 
-                                       replacement = as.character(model_to_run), 
-                                       vectorize = FALSE)
+  model_file <- paste0(model_to_run, '.R')
   
   source(here::here('State_space_growth_models', 'Code', 'nimble_models', model_file))
   source(here::here('State_space_growth_models', 'Code', 'ssm_restart_functions.R'))
