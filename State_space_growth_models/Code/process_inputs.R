@@ -14,7 +14,7 @@ source(here::here('State_space_growth_models/Code/ssm_config.R'))
 ## Directory of input data files for this site. 
 ## The site directory must include the following files:
 ## tree_attrs.csv, unit_attrs.csv, dbh_tree_obs.csv, year_tree_obs.csv, 
-## pft_df.csv and cwd_mean.csv
+## cwd_tree_year.csv, and either pft_df.csv or initDBH_tree_year.csv
 
 ## Routes us to the correct input data file based on site alias
 indir <- file.path('State_space_growth_models/','Input_data',indir_names[[site]])
