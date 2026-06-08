@@ -4,9 +4,9 @@
 #SBATCH --job-name=chain1
 #SBATCH --account=fc_lmklab
 #SBATCH --partition=savio3_htc
-#SBATCH --ntasks=4
+#SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=72:00:00
+#SBATCH --time=60:00:00
 #
 ## Command(s) to run
 module load gcc r 
