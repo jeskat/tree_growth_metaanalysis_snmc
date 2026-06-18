@@ -90,7 +90,7 @@ size_dist <- ggplot(sizes_filtered,
 
 print(size_dist)
 
-ggsave(here::here(fig_dir, 'FigS5_pft_size_distribution.jpeg'), 
+ggsave(here::here(fig_dir, 'FigS6_pft_size_distribution.jpeg'), 
        plot = size_dist, device = 'jpeg', dpi = 'print',
        width = 6.5, height = 5, units = 'in', scale = 1)
 

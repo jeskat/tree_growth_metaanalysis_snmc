@@ -79,6 +79,6 @@ barplot <- ggplot(site_totals, aes(fill = Species_plot, y = Species_frac, x = Si
 
 print(barplot)  
   
-ggsave(here::here(fig_dir, 'FigS4_composition_barchart.jpeg'), 
+ggsave(here::here(fig_dir, 'FigS5_composition_barchart.jpeg'), 
        plot = barplot, device = 'jpeg', dpi = 'print',
        width = 6.5, height = 5, units = 'in', scale = 1)

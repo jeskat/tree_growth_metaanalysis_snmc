@@ -139,14 +139,14 @@ m_q <- ggarrange(thinBurnSize, treeSD, plotSD, obsSD, resSD,
                  ncol=2, nrow=3, common.legend=TRUE, legend = 'bottom', align = "hv",
                  labels = c('M', 'N', 'O', 'P', 'Q'))
 
-ggsave(here::here(fig_dir, 'FigS8_SSM_params_A-F.jpeg'),
+ggsave(here::here(fig_dir, 'FigS9_SSM_params_A-F.jpeg'),
        plot = a_f, device = 'jpeg', dpi = 'print',
        width = 7, height = 8.5, units = 'in', scale = 1.25)
 
-ggsave(here::here(fig_dir, 'FigS8_SSM_params_G-L.jpeg'),
+ggsave(here::here(fig_dir, 'FigS9_SSM_params_G-L.jpeg'),
        plot = g_l, device = 'jpeg', dpi = 'print',
        width = 7, height = 8.5, units = 'in', scale = 1.25)
 
-ggsave(here::here(fig_dir, 'FigS8_SSM_params_M_Q.jpeg'),
+ggsave(here::here(fig_dir, 'FigS9_SSM_params_M_Q.jpeg'),
        plot = m_q, device = 'jpeg', dpi = 'print',
        width = 7, height = 8.5, units = 'in', scale = 1.25)
