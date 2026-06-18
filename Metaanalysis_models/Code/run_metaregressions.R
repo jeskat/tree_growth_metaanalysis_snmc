@@ -79,7 +79,7 @@ print(ppt_plot)
 
 write.csv(ppt_tbl, here::here(tbl_dir, 'TabS11_mtrgr_ppt.csv'), row.names = FALSE)
 
-ggsave(here::here(fig_dir, 'FigS9_mtrgr_ppt.jpeg'),
+ggsave(here::here(fig_dir, 'FigS12_mtrgr_ppt.jpeg'),
        ppt_plot +coord_cartesian(clip = 'off') + 
          xlab('Average winter precipitation (mm)'), 
        device = 'jpeg', dpi = 'print',
@@ -109,7 +109,7 @@ print(cwd_plot)
 
 write.csv(cwd_tbl, here::here(tbl_dir, 'TabS12_mtrgr_cwd.csv'), row.names = FALSE)
 
-ggsave(here::here(fig_dir, 'FigS10_mtrgr_cwd.jpeg'),
+ggsave(here::here(fig_dir, 'FigS13_mtrgr_cwd.jpeg'),
        cwd_plot +coord_cartesian(clip = 'off'), 
        device = 'jpeg', dpi = 'print',
        width = width, height = height, scale = scale, units = 'in')
@@ -138,7 +138,7 @@ print(pdsi_plot)
 
 write.csv(pdsi_tbl, here::here(tbl_dir, 'TabS13_mtrgr_pdsi.csv'), row.names = FALSE)
 
-ggsave(here::here(fig_dir, 'FigS11_mtrgr_pdsi.jpeg'),
+ggsave(here::here(fig_dir, 'FigS14_mtrgr_pdsi.jpeg'),
        pdsi_plot +coord_cartesian(clip = 'off'), 
        device = 'jpeg', dpi = 'print',
        width = width, height = height, scale = scale, units = 'in')
@@ -167,7 +167,7 @@ print(depth_plot)
 
 write.csv(depth_tbl, here::here(tbl_dir, 'TabS14_mtrgr_depth.csv'), row.names = FALSE)
 
-ggsave(here::here(fig_dir, 'FigS12_mtrgr_depth.jpeg'),
+ggsave(here::here(fig_dir, 'FigS15_mtrgr_depth.jpeg'),
        depth_plot +coord_cartesian(clip = 'off'), 
        device = 'jpeg', dpi = 'print',
        width = width, height = height, scale = scale, units = 'in')
@@ -195,7 +195,7 @@ print(awc_plot)
 
 write.csv(awc_tbl, here::here(tbl_dir, 'TabS15_mtrgr_awc.csv'), row.names = FALSE)
 
-ggsave(here::here(fig_dir, 'FigS13_mtrgr_awc.jpeg'),
+ggsave(here::here(fig_dir, 'FigS16_mtrgr_awc.jpeg'),
        awc_plot +coord_cartesian(clip = 'off') + 
          xlab('Available water capacity in top 50 cm (cm/cm)'), 
        device = 'jpeg', dpi = 'print',
@@ -226,7 +226,7 @@ print(rsdi_plot)
 write.csv(rsdi_tbl, here::here(tbl_dir, 'TabS16_mtrgr_rsdi.csv'), 
           row.names = FALSE)
 
-ggsave(here::here(fig_dir, 'FigS14_mtrgr_rsdi.jpeg'),
+ggsave(here::here(fig_dir, 'FigS17_mtrgr_rsdi.jpeg'),
        rsdi_plot +coord_cartesian(clip = 'off'), device = 'jpeg',
        dpi = 'print',
        width = 6.5, height = 8, units = 'in')
@@ -371,7 +371,7 @@ print(intensity_plot)
 write.csv(intensity_tbl, here::here(tbl_dir, 'TabS21_mtrgr_intensity.csv'), 
           row.names = FALSE)
 
-ggsave(here::here(fig_dir, 'FigS15_mtrgr_intensity.jpeg'),
+ggsave(here::here(fig_dir, 'FigS18_mtrgr_intensity.jpeg'),
        intensity_plot +coord_cartesian(clip = 'off'), device = 'jpeg',
        dpi = 'print',
        width = 6.5, height = 8, units = 'in')
@@ -380,13 +380,15 @@ ggsave(here::here(fig_dir, 'FigS15_mtrgr_intensity.jpeg'),
 # Make summary table ------------------------------------------------------
 
 ## Concatenate metaregression summaries
+log_scale <- FALSE
+
 mtr_tbl <- rbind(
-  summarize_metaregression(mr_rsdi, 'rSDI'),
-  summarize_metaregression(mr_ppt, 'ppt_by_waterYr'),
-  summarize_metaregression(mr_cwd, 'cwd_by_waterYr'),
-  summarize_metaregression(mr_pdsi, 'pdsi_by_waterYr'),
-  summarize_metaregression(mr_depth, 'TotalDepth'),
-  summarize_metaregression(mr_awc, 'AWC_50cm')
+  summarize_metaregression(mr_rsdi, 'rSDI', log_scale = log_scale, mltplr = 0.1),
+  summarize_metaregression(mr_ppt, 'ppt_by_waterYr', log_scale = log_scale, mltplr = 10),
+  summarize_metaregression(mr_cwd, 'cwd_by_waterYr', log_scale = log_scale, mltplr = 10),
+  summarize_metaregression(mr_pdsi, 'pdsi_by_waterYr', log_scale = log_scale, mltplr = 0.1),
+  summarize_metaregression(mr_depth, 'TotalDepth', log_scale = log_scale, mltplr = 10),
+  summarize_metaregression(mr_awc, 'AWC_50cm', log_scale = log_scale, mltplr =0.01)
 )
 
 write.csv(mtr_tbl,

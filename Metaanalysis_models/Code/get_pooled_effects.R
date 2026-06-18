@@ -1,5 +1,5 @@
 ###---------------------------------------------------------------------------##
-## Runs meta-analyses and makes Figure 2 and Tables S8-S10 
+## Runs meta-analyses and makes Figure 3 and Tables S8-S10 
 ## (Pooled effects of treatment, tree size, measurement period climatic water 
 ## deficit (CWD), and their interactions on tree growth.)
 ###---------------------------------------------------------------------------##
@@ -16,6 +16,7 @@ library(tidyverse)
 library(metafor)
 library(Matrix)
 library(clubSandwich)
+library(scales)
 
 source(here::here('Metaanalysis_models/Code/metaanalysis_config.R'))
 source(here::here('Metaanalysis_models/Code/metaanalysis_functions.R'))
@@ -88,20 +89,24 @@ meta_cwd <- make_meta_df(full_data = cwd_effects, cv_list = cwd_cov_by_trt_m,
                          formula = formula(~Burn*Thin))
 
 ###-----------------------------------------------------------------------------
-### Construct summary figure (Figure 2)
+### Construct summary figure (Figure 3)
 ###-----------------------------------------------------------------------------
 
 ## Panel A
 cntrlGrowth <- plot_meta_analysis(meta_unit[[1]], 
-                                  axis_label = 'Growth (log DBH increment)',
+                                  axis_label = "DBH increment (cm/yr)", #'Growth (log DBH increment)',
                                   control = TRUE,
-                                  zero_line = FALSE)
+                                  h_line = NaN,
+                                  log_scale = FALSE)
 
 ## Panel B
 trtGrowth <- plot_meta_analysis(meta_unit[[1]], 
-                                axis_label = 'Effect of treatment on growth',
+                                axis_label = 'Treatment effect (multiplier on Panel A)', # 'Effect of treatment on growth',
                                 control = FALSE,
-                                zero_line = TRUE)
+                                h_line = 1,
+                                log_scale = FALSE,
+                                scales = 'free_x')
+
 
 ## Combine Panels A & B
 growthMeta <- ggarrange(cntrlGrowth, trtGrowth, 
@@ -112,15 +117,17 @@ growthMeta <- ggarrange(cntrlGrowth, trtGrowth,
 
 ## Panel C
 cntrlSize <- plot_meta_analysis(meta_size[[1]], 
-                                axis_label = 'Effect of log DBH on growth',
+                                axis_label = 'Effect of log DBH on growth \n(multiplier on Panel A)', 
                                 control = TRUE,
-                                zero_line = TRUE)
+                                h_line = 1,
+                                log_scale = FALSE)
 
 ## Panel D
 trtSize <- plot_meta_analysis(meta_size[[1]], 
-                              axis_label = 'Effect of treatment on the log DBH effect',
+                              axis_label = "Effect of log DBH on treatment effect \n(multiplier on Panel B)",
                               control = FALSE,
-                              zero_line = TRUE)
+                              h_line = 1,
+                              log_scale = FALSE)
 
 ## Combine Panels C & D
 sizeMeta <- ggarrange(cntrlSize, trtSize, 
@@ -131,15 +138,17 @@ sizeMeta <- ggarrange(cntrlSize, trtSize,
 
 ## Panel E
 cntrlCWD <- plot_meta_analysis(meta_cwd[[1]], 
-                               axis_label = "Effect of measurement \nperiod CWD on growth",
+                               axis_label = "Effect of pCWD on growth \n(multiplier on Panel A)",
                                control = TRUE,
-                               zero_line = TRUE)
+                               h_line = 1,
+                               log_scale = FALSE)
 
 ## Panel F
 trtCWD <- plot_meta_analysis(meta_cwd[[1]], 
-                             axis_label = expression("Effect of treatment on the CWD effect"),
+                             axis_label = "Effect of pCWD on treatment effect \n(multiplier on Panel B)",
                              control = FALSE,
-                             zero_line = TRUE)
+                             h_line = 1,
+                             log_scale = FALSE)
 
 ## Combine Panels E & F
 cwdMeta <- ggarrange(cntrlCWD, 
@@ -150,16 +159,20 @@ cwdMeta <- ggarrange(cntrlCWD,
                      widths = c(0.55, 1))
 
 ## Combine all three rows
-fig2 <- ggarrange(growthMeta, sizeMeta, cwdMeta, 
+fig3 <- ggarrange(growthMeta, sizeMeta, cwdMeta, 
                   nrow = 3, 
                   common.legend = TRUE, legend = 'bottom', 
                   legend.grob = get_legend(cntrlGrowth))
 
-print(fig2)
+fig3 <- annotate_figure(
+  fig3,
+  top = text_grob('Figure 3', size = 12)
+)
+print(fig3)
 
-ggsave(here::here(fig_dir, 'Fig2_pooled_effects.jpeg'), 
-       plot = fig2, device = 'jpeg', dpi = 'print',
-       width = 8, height = 8, units = 'in')
+ggsave(here::here(fig_dir, 'Fig3_pooled_effects.tiff'), 
+       plot = fig3, device = 'tif', dpi = 600,
+       width = 18, height = 18, units = 'cm')
 
 ###-----------------------------------------------------------------------------
 ### Construct summary tables (Supplementary Tables F1-F3)

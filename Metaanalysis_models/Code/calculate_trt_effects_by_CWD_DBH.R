@@ -1,6 +1,6 @@
 ###---------------------------------------------------------------------------##
 ## Runs meta-analyses of treatment effects on growth for different combinations  
-## of PFT, DBH, and CWD. Makes Figures 3, 4, and 5. 
+## of PFT, DBH, and CWD. Makes Figures 4, 5, S10, and S11. 
 ###---------------------------------------------------------------------------##
 
 ###-----------------------------------------------------------------------------
@@ -112,56 +112,110 @@ all_growth_table <- all_growth_outcomes %>%
 
 
 ###-----------------------------------------------------------------------------
-### Make a Figure 3 (growth vs. DBH when CWD = 0)
+### Make Figure S9 (growth vs. DBH when CWD = 0)
 ###-----------------------------------------------------------------------------
 
 ## Subset results for CWD = 0
-pval_tbl_cwd0 <- all_dbh_cwd_pvals[all_dbh_cwd_pvals$CWD==0,]
 growth_cwd0 <- all_growth_table[all_growth_table$CWD == 0, ]
 
-## Identify DBH ranges with significant treatment effects
-sgnf_dbh <- identify_significant_ranges(pval_tbl_cwd0,DBH)
+## Define custom limits for y-axis for each PFT
+dbh_lims <- data.frame(
+  PFT = c('Cedar', 'Cedar', 'Fir', 'Fir', 'Sugar Pine', 'Sugar Pine'
+          , 'Yellow Pine', 'Yellow Pine'),
+  pred = c(0, 0.6,
+           0, 0.6,
+           0, 1.1
+           ,0, 3.5
+           )
+)
 
-## Plot and label
-dbh_plot <- plot_growth_by_xVar(sgnf_dbh,
-                                growth_cwd0, 
-                                x_var = DBH)
-dbh_plot <- dbh_plot + xlab('DBH (cm)')
+dbh_splmnt <- plot_growth_by_xVar(growth_cwd0, 
+                                  DBH, x_subset = c(30, 60, 90), 
+                                  logscale = TRUE, dodge_width = 10,
+                                  dummy_limits = dbh_lims)
 
-print(dbh_plot)
+dbh_splmnt <- dbh_splmnt + xlab('DBH (cm) \n')
 
-ggsave(here::here(fig_dir, 'Fig3_growth_vs_dbh.jpeg'), 
-       plot = dbh_plot, device = 'jpeg', dpi = 'print',
-       width = 6.5, height = 6.5, units = 'in')
+ggsave(here::here(fig_dir, 'FigS10_growth_vs_dbh.tif'), 
+       plot = dbh_splmnt, device = 'tiff', dpi = 600,
+       width = 16.5, height = 16.5, units = 'cm')
 
 
 ###-----------------------------------------------------------------------------
-### Make Figure 4 (growth vs. CWD when DBH = 30 cm)
+### Make Figure S10 (growth vs. CWD when DBH = 30 cm)
 ###-----------------------------------------------------------------------------
 
 ## Subset results for DBH = 30
-pval_tbl_dbh30 <- all_dbh_cwd_pvals[all_dbh_cwd_pvals$DBH==30,]
 growth_dbh30 <- all_growth_table[all_growth_table$DBH == 30, ]
 
-## Identify DBH ranges with significant treatment effects
-sgnf_cwd <- identify_significant_ranges(pval_tbl_dbh30, CWD)
 
-## Plot
-cwd_plot <- plot_growth_by_xVar(sgnf_cwd,
-                                growth_dbh30, 
-                                x_var = CWD)
-cwd_plot <- cwd_plot + xlab("Measurement period CWD (standard deviations from site mean)")
+cwd_lims <- data.frame(
+  PFT = c('Cedar', 'Cedar', 'Fir', 'Fir', 'Sugar Pine', 'Sugar Pine'
+          , 'Yellow Pine', 'Yellow Pine'),
+  pred = c(0, 2,
+           0, 0.8,
+           0, 1.3
+           ,0, 3.5
+           )
+)
 
-print(cwd_plot)
+cwd_splmnt <- plot_growth_by_xVar(growth_dbh30, 
+                                CWD, x_subset = c(-3, -2, -1, 0, 1, 2, 3), 
+                                logscale = TRUE, dodge_width = 0.5, 
+                                dummy_limits = cwd_lims)
 
-ggsave(here::here(fig_dir, 'Fig4_growth_vs_cwd.jpeg'), 
-       plot = cwd_plot, device = 'jpeg', dpi = 'print',
-       width = 6.5, height = 6.5, units = 'in')
+cwd_splmnt <- cwd_splmnt + xlab("Measurement period CWD \n(standard deviations from site mean)")
+
+ggsave(here::here(fig_dir, 'FigS11_growth_vs_cwd.tif'), 
+       plot = cwd_splmnt, device = 'tiff', dpi = 600,
+       width = 16.5, height = 16.5, units = 'cm')
+
+
+###-----------------------------------------------------------------------------
+### Make Figure 4 (unlogged growth vs. DBH and CWD for cedar, fir, and sugar pine)
+###-----------------------------------------------------------------------------
+
+## DBH portion
+dbh_plot <- plot_growth_by_xVar(growth_cwd0[growth_cwd0$PFT != 'Yellow Pine',], 
+                                DBH, x_subset = c(30, 60, 90), 
+                                logscale = FALSE, dodge_width = 10, ncol = 1,
+                                dummy_limits = dbh_lims[dbh_lims$PFT != 'Yellow Pine',])
+
+dbh_plot <- dbh_plot + xlab('DBH (cm) \n')
+
+## CWD portion
+cwd_plot <- plot_growth_by_xVar(growth_dbh30[growth_dbh30$PFT != 'Yellow Pine',], 
+                                CWD, x_subset = c(-3, -2, -1, 0, 1, 2, 3), 
+                                logscale = FALSE, dodge_width = 0.5, ncol = 1,
+                                dummy_limits = cwd_lims[cwd_lims$PFT != 'Yellow Pine',])
+
+cwd_plot <- cwd_plot + xlab("pCWD (standard deviations \nfrom site mean)")
+
+## Combine panels
+dbh_and_cwd <- ggarrange(dbh_plot, 
+          cwd_plot + theme(axis.title.y = element_blank()),
+          nrow = 1,
+          common.legend = TRUE,
+          legend = 'bottom',
+          labels = c('A', 'B'))
+
+dbh_and_cwd <- annotate_figure(
+  dbh_and_cwd,
+  top = text_grob('Figure 4', size = 12)
+)
+
+ggsave(here::here(fig_dir, 'Fig4_growth_vs_dbh_cwd.tif'), 
+       plot = dbh_and_cwd, device = 'tiff', dpi = 600,
+       width = 18, height = 22, units = 'cm')
+
 
 ###-----------------------------------------------------------------------------
 ### Make Figure 5 (facetted heatmap showing treatment effects for each DBH-CWD 
 ### combination.
 ###-----------------------------------------------------------------------------
+
+## Set flag for using log or unlogged scale
+log_scale = FALSE
 
 ## Set significance thresholds
 all_dbh_cwd_pvals[signif(all_dbh_cwd_pvals$pval, 2) <= 0.05, 'plot_pval'] = "Clear (p <= 0.05)"
@@ -181,9 +235,24 @@ all_dbh_cwd_pvals$DBH_char <- factor(as.character(all_dbh_cwd_pvals$DBH),
 ## Make labels legible
 all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect=="Thin:Burn Interaction", "Effect"] = "Thin:Burn\n Interaction"
 
+to_plot <- all_dbh_cwd_pvals
+
+## Unlog if specified
+if(log_scale==FALSE){
+ to_plot$Estimate <- exp(to_plot$Estimate)
+}
+
+# 1. Define an asymmetric rescaler function
+rescale_around_mid <- function(midpoint = 1) {
+  function(x, to = c(0, 1), from = range(x, na.rm = TRUE)) {
+    ifelse(x < midpoint,
+           scales::rescale(x, to = c(0, 0.5), from = c(from[1], midpoint)),
+           scales::rescale(x, to = c(0.5, 1), from = c(midpoint, from[2])))
+  }
+}
 
 ## Construct heatmap
-heatmap <- ggplot(all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect != "Control",],
+heatmap <- ggplot(to_plot[to_plot$Effect != "Control",], 
                   aes(x = CWD, y = DBH_char, fill = Estimate)) + 
   geom_tile_pattern(
     aes(pattern = plot_pval), # Map significance category to pattern
@@ -193,14 +262,7 @@ heatmap <- ggplot(all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect != "Control",],
     # pattern_spacing = 0.025,
     color = "black" # This is the border color of the tiles
     ) +
-  scale_fill_scico( # Map color to treatment effect size
-    palette = 'bam',
-    na.value = 'grey90',
-    name = "Mean effect size",
-    ## Add limits to make sure color bar is centered on 0
-    limits = c(-(max(all_dbh_cwd_pvals$Estimate, na.rm = TRUE)),
-               max(all_dbh_cwd_pvals$Estimate, na.rm = TRUE))
-    ) +
+  
   # Assign specific patterns to each category
   scale_pattern_manual(
     name = "Statistical clarity",
@@ -209,16 +271,16 @@ heatmap <- ggplot(all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect != "Control",],
       "Suggestive (0.05 < p <= 0.1)" = "stripe",
       "Unclear (p > 0.1)" = "none" # Use 'none' for no pattern
     )
-    ) +
+  ) +
   guides(
     pattern = guide_legend(override.aes = list(
       fill = c("white", "white", "white") 
-      ))
-    ) +
+    ))
+  ) +
   labs(
     y = "DBH (cm)",
-    x = "Measurement period CWD\n(standard deviations from site mean)"
-    ) +
+    x = "pCWD (standard deviations \nfrom site mean)"
+  ) +
   theme_minimal(base_size = 14) + # A clean theme for the plot
   theme(axis.line = element_line(color='black'),
         panel.grid.minor = element_blank(),
@@ -227,14 +289,36 @@ heatmap <- ggplot(all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect != "Control",],
         legend.direction = 'vertical',
         legend.box = 'vertical') +
   coord_fixed() # Ensures the tiles are square
+  
+if(log_scale==FALSE){
+  heatmap <- heatmap + scale_fill_gradientn(
+    colours = scico(256, palette = "bam"), # Pulls the "bam" palette colors manually
+    name = "Mean effect (multiplier on \ngrowth in control)",
+    rescaler = rescale_around_mid(midpoint = 1)   # Safely applies your custom compression
+  ) 
+  }else{
+    heatmap <- heatmap + scale_fill_scico( # Map color to treatment effect size
+        palette = 'bam',
+        na.value = 'grey90',
+        name = "Mean effect size",
+        ## Add limits to make sure color bar is centered on 0
+        limits = c(-(max(to_plot$Estimate, na.rm = TRUE)),
+                   max(to_plot$Estimate, na.rm = TRUE))
+      )
+        }
+  
 
 ## Facet by PFT and treatment   
 heatmap = heatmap + facet_grid(PFT~factor(Effect, 
                                           levels = c('Burn', 'Thin', 'Thin:Burn\n Interaction')))
 
+heatmap <- annotate_figure(
+  heatmap,
+  top = text_grob('Figure 5', size = 12)
+)
 print(heatmap)
 
-ggsave(here::here(fig_dir, 'Fig5_faceted_heatmap.jpeg'), 
-       plot = heatmap, device = 'jpeg', dpi = 'print',
-       width = 7, height = 8.5, units = 'in')
+ggsave(here::here(fig_dir, 'Fig5_faceted_heatmap.tiff'), 
+       plot = heatmap, device = 'tif', dpi = 600,
+       width = 18, height = 22, units = 'cm')
 
