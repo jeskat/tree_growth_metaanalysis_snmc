@@ -84,16 +84,20 @@ ggsave(here::here(fig_dir, 'FigS1_clim_boxplots.jpeg'),
        width = 6.5, height = 8, units = 'in', scale = 1)
 
 
-# Make boxplots (rSDI and soils) ------------------------------------------
+# Make boxplots (rSDI, soils, and intensity) ------------------------------------------
 
 rsdi <- make_rgr_boxplot('rSDI', rgr_tbl = rgrs_for_splmnt)
 depth <- make_rgr_boxplot('TotalDepth', rgr_tbl = rgrs_for_splmnt)
 awc <- make_rgr_boxplot('AWC_50cm', rgr_tbl = rgrs_for_splmnt)
 
+## For intensity, remove LaTour because pre-treatment measurements are unreliable
+intnsty_boxplot <- make_rgr_boxplot('BA_reduction', rgr_tbl = rgrs_for_splmnt[rgrs_for_splmnt$Site != 'LaTour',])
+intnsty_boxplot <- intnsty_boxplot + ylab('Treatment intensity \n(% basal area reduction)')
 
 print(rsdi)
 print(depth)
 print(awc)
+print(intnsty_boxplot)
 
 soils <- ggarrange(depth, 
                    awc + ylab('AWC in top 50cm \n(cm/cm)'), 
@@ -107,4 +111,8 @@ ggsave(here::here(fig_dir, 'FigS2_soils_boxplots.jpeg'),
 
 ggsave(here::here(fig_dir, 'FigS3_rsdi_boxplot.jpeg'), 
        plot = rsdi, device = 'jpeg', dpi = 'print',
-       width = 6.5, height = 4.25, units = 'in', scale = 1)
+       width = 6.5, height = 4, units = 'in', scale = 1)
+
+ggsave(here::here(fig_dir, 'FigS4_intensity_boxplot.jpeg'),
+       plot = intnsty_boxplot, device = 'jpeg', dpi = 'print',
+       width = 6.5, height = 4, units = 'in', scale = 1)
