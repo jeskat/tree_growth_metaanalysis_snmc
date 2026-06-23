@@ -26,22 +26,23 @@ The figure below illustrates the main components of this repository and the gene
 ![Overview of analysis workflow. Folders are represented by boxes; those containing data files (no code) have a tab in the lower right corner. The purple dashed box denotes the contents of this repository; items outside of the dashed box are external to this repository.](code_workflow.png)
 
 ### Forest inventory data availability
-All site-level forest inventory data files needed to run the SSGMs are saved in the `State_space_growth_models/Input_data` directory. We processed these data files from raw forest inventory data for each field site. Raw inventory data are publicly available for Blodgett at [Stephens et al. 2025](https://doi.org/10.6073/pasta/06a3a2556f5289b89b9f8683becfe08e). For the other sites, the raw data are not available publicly but can be requested from the authors. As an example of our data pre-processing procedure, we provide the code needed to convert the Blodgett inventory data to SSGM inputs in the `Inventory_data_processing/` directory of this repository. Data pre-processing for the other sites followed a very similar procedure, with minor changes to reflect the unique structure of each raw dataset. 
+All site-level forest inventory data files needed to run the SSGMs are saved in the `State_space_growth_models/Input_data` directory. We processed these data files from raw forest inventory data for each field site. Raw inventory data are publicly available for Blodgett at [Stephens et al. 2025](https://doi.org/10.6073/pasta/06a3a2556f5289b89b9f8683becfe08e) and for Sequoia and Tharp's Creek at [Das 2026](https://doi.org/10.5066/P1MHZKJY). For the four other sites, the raw data are not available publicly but can be requested from the authors. As an example of our data pre-processing procedure, we provide the code needed to convert the Blodgett, Sequoia, and Tharp's Creek inventory data to SSGM inputs in the `Inventory_data_processing/` directory of this repository. Data pre-processing for the other sites followed a very similar procedure, with minor changes to reflect the unique structure of each raw dataset. 
 
 ## Contents
 ### Inventory_data_processing
 Contains code for processing raw inventory data to create the inputs needed to run the SSGMs. Key processes include: data cleaning (removing duplicated, null, and filled records; harmonizing tree species and life status across each tree’s remeasurements; and correcting typos); removing trees with less than two post-treatment diameter at breast height (DBH) measurements; removing trees with DBH < 15cm; removing remeasurements on dead trees; removing remeasurements associated with growth outliers; and formatting data tables for SSGM ingestion. 
 
-We provide processing scripts only for sites with permanently archived inventory data (i.e., Blodgett).
+We provide processing scripts only for sites with permanently archived inventory data (i.e., Blodgett, Sequoia, and Tharp's Creek).
 
 
 * `Code/`
   + `config.py`: provides values and list-style mappings to enable consistent data processing (e.g., consistent treatment naming conventions and minimum diameter thresholds) across all sites. 
   + `inventory_processing_functions.py`: provides all common functions needed to process inventory data for each site. These functions are called in `process_inventory_data_[site].ipynb` and `get_standStructure_[site].ipynb` notebooks.
-  + `process_inventory_data_Blodgett.ipynb`: pipeline for processing raw inventory data [(Stephens et al. 2025)](https://doi.org/10.6073/pasta/06a3a2556f5289b89b9f8683becfe08e) and producing SSGM input data for Blodgett (other sites use a similar process). Saves processed data to `State_space_growth_models/Input_data/Blodgett/`.
+  + `process_inventory_data_Blodgett.ipynb`: pipeline for processing raw inventory data [(Stephens et al. 2025)](https://doi.org/10.6073/pasta/06a3a2556f5289b89b9f8683becfe08e) and producing SSGM input data for Blodgett. Saves processed data to `State_space_growth_models/Input_data/Blodgett/`.
+  + `process_inventory_data_Sequoia_Tharp.ipynb`: pipeline for processing raw inventory data [Das 2026](https://doi.org/10.5066/P1MHZKJY) and producing SSGM input data for Sequoia and Tharp's Creek. Notebook must be run separately for each site, specifying "Sequoia" or "TharpsCreek" in cell 2. Saves processed data to `State_space_growth_models/Input_data/Sequoia/` or `State_space_growth_models/Input_data/TharpsCreek/`. 
   
 ### Covariate_and_metaregressor_processing
-Contains code for processing the climatic water deficit (CWD) covariate in the SSGMs, along the mean climate, soil, and stand structure variables that are used in the meta-regressions. 
+Contains code for processing the climatic water deficit (CWD) covariate in the SSGMs, along with the mean climate, soil, and stand structure variables that are used in the meta-regressions. 
 
 * `Code/`
   + `covariate_functions.py`: contains functions for associating the geospatial coordinates of treatment units with raw covariate and/or meta-regressor data. 
@@ -50,7 +51,8 @@ Contains code for processing the climatic water deficit (CWD) covariate in the S
   + `create_climate_metaregressors.ipynb`: takes in the output of `process_terraclimate_data.R` and calculates the winter precipitation, CWD, and PDSI metaregressor for each treatment unit within each site. Outputs `site_mean_clim.csv`.
   + `process_ssurgo_variables.R`: adapts the workflow of [Chasen 2020](https://rpubs.com/emchasen/SSURGOcleaning) to import and clean soil survey (SSURGO) data for each survey area in which a study site falls. Outputs `all_unit_soils.csv`.
   + `create_soil_metaregressors.ipynb`: takes in the output of `process_ssurgo_variables.R` and other SSURGO data (which must be downloaded and saved) and calculates the available water capacity (AWC) and soil depth meta-regressors for each treatment unit within each site. Outputs `unit_mean_soil.csv`. 
-  + `get_standStructure_Blodget.ipynb`: creates relative stand density index (rSDI) and treatment intensity metaregressors along with pre-treatment species composition for each treatment unit at Blodgett, using raw inventory data [(Stephens et al. 2025)](https://doi.org/10.6073/pasta/06a3a2556f5289b89b9f8683becfe08e) as input. Creates `Blodgett_intensity.csv`, `Blodgett_rsdi.csv`, and `Blodgett_pretrt_comp.csv`. Other sites use an analogous process to produce similar outputs. 
+  + `get_standStructure_Blodgett.ipynb`: creates relative stand density index (rSDI) and treatment intensity metaregressors along with pre-treatment species composition for each treatment unit at Blodgett, using raw inventory data [(Stephens et al. 2025)](https://doi.org/10.6073/pasta/06a3a2556f5289b89b9f8683becfe08e) as input. Creates `Blodgett_intensity.csv`, `Blodgett_rsdi.csv`, and `Blodgett_pretrt_comp.csv`. Other sites use an analogous process to produce similar outputs.
+  + `get_standStructure_Sequoia_Tharp.ipynb`: creates relative stand density index (rSDI) and treatment intensity metaregressors along with pre-treatment species composition for each treatment unit at Sequoia or Tharp's Creek (user must specify in cell 2), using raw inventory data [(Das 2026)](https://doi.org/10.5066/P1MHZKJY) as input. Creates `Sequoia_intensity.csv`, `Sequoia_rsdi.csv`, and `Sequoia_pretrt_comp.csv` or `TharpsCreek_intensity.csv`, `TharpsCreek_rsdi.csv`, and `TharpsCreek_pretrt_comp.csv`.
   + `compile_all_metaregressors.ipynb`: takes in the outputs of `create_climate_metaregressors.ipynb`, `create_soil_metaregressors.ipynb`, and site-specific stand structure processing scripts (e.g., `get_standStructure_Blodget.ipynb`) and compiles all meta-regressors for all sites into one table. Outputs `Covariate_and_metaregressor_processing/Processed_data/all_regressors_by_unit.csv`. 
 * `Processed_data/`:
   + `all_regressors_by_unit.csv`: Tabular output of `compile_all_metaregressors.ipynb`, containing unit-specific climate, soil, and stand structure meta-regressors for all sites. 
@@ -137,6 +139,8 @@ Contains figures and tables included in the manuscript, and code to make supplem
   
 
 ## References
+Das, A.J. 2026. Sequoia National Park tree growth data for thinning and burning study: U.S. Geological Survey data release. https://doi.org/10.5066/P1MHZKJY.
+
 Knapp, E. E., J. E. Keeley, E. A. Ballenger, and T. J. Brennan. 2005. “Fuel Reduction and Coarse Woody Debris Dynamics with Early Season and Late Season Prescribed Fire in a Sierra Nevada Mixed Conifer Forest.” Forest Ecology and Management 208 (1): 383–97. https://doi.org/10.1016/j.foreco.2005.01.016.
 
 Knapp, E. E., J. M. Lydersen, M. P. North, and B. M. Collins. 2017. “Efficacy of Variable Density Thinning and Prescribed Fire for Restoring Forest Heterogeneity to Mixed-Conifer Forest in the Central Sierra Nevada, CA.” Forest Ecology and Management 406: 228–41. https://doi.org/10.1016/j.foreco.2017.08.028.
