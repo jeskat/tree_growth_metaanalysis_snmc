@@ -35,5 +35,6 @@ corr_all <- cor(rgrs[,3:(length(rgrs))])
 png(here::here(fig_dir, 'FigS8_metaregressor_correlation.jpeg'), 
     width = 8000 , height = 8000,
     units = "px", type = "quartz", pointsize = 20, res = 800)
-corrplot(corr_all, method = 'number', type='upper')
+corrplot(corr_all, method = 'color', type='upper', addCoef.col = 'black', 
+         diag = FALSE)
 dev.off()
