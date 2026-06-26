@@ -383,12 +383,12 @@ ggsave(here::here(fig_dir, 'FigS18_mtrgr_intensity.jpeg'),
 log_scale <- FALSE
 
 mtr_tbl <- rbind(
-  summarize_metaregression(mr_rsdi, 'rSDI', log_scale = log_scale, mltplr = 0.1),
-  summarize_metaregression(mr_ppt, 'ppt_by_waterYr', log_scale = log_scale, mltplr = 10),
+  summarize_metaregression(mr_ppt, 'ppt_by_waterYr', log_scale = log_scale, mltplr = 100),
   summarize_metaregression(mr_cwd, 'cwd_by_waterYr', log_scale = log_scale, mltplr = 10),
-  summarize_metaregression(mr_pdsi, 'pdsi_by_waterYr', log_scale = log_scale, mltplr = 0.1),
+  summarize_metaregression(mr_pdsi, 'pdsi_by_waterYr', log_scale = log_scale, mltplr = 1),
   summarize_metaregression(mr_depth, 'TotalDepth', log_scale = log_scale, mltplr = 10),
-  summarize_metaregression(mr_awc, 'AWC_50cm', log_scale = log_scale, mltplr =0.01)
+  summarize_metaregression(mr_awc, 'AWC_50cm', log_scale = log_scale, mltplr =0.1),
+  summarize_metaregression(mr_rsdi, 'rSDI', log_scale = log_scale, mltplr = 0.1)
 )
 
 write.csv(mtr_tbl,
