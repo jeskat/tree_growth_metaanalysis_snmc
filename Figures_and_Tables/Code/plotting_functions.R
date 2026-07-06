@@ -128,7 +128,7 @@ plot_meta_analysis <- function(effects_summary, # This is the first output of `m
     ylab(axis_label) +
     
     # Styling
-    coord_flip() + theme_minimal(base_size = 10) +
+    coord_flip() + theme_minimal(base_size = 12) +
     theme(axis.line = element_line(color='black'), 
           panel.grid.minor = element_blank(),
           panel.grid.major = element_blank(),
