@@ -215,7 +215,7 @@ ggsave(here::here(fig_dir, 'Fig4_growth_vs_dbh_cwd.tif'),
 ###-----------------------------------------------------------------------------
 
 ## Set flag for using log or unlogged scale
-log_scale = FALSE
+log_scale = TRUE
 
 ## Set significance thresholds
 all_dbh_cwd_pvals[signif(all_dbh_cwd_pvals$pval, 2) <= 0.05, 'plot_pval'] = "Clear (p <= 0.05)"
@@ -237,19 +237,6 @@ all_dbh_cwd_pvals[all_dbh_cwd_pvals$Effect=="Thin:Burn Interaction", "Effect"] =
 
 to_plot <- all_dbh_cwd_pvals
 
-## Unlog if specified
-if(log_scale==FALSE){
- to_plot$Estimate <- exp(to_plot$Estimate)
-}
-
-# 1. Define an asymmetric rescaler function
-rescale_around_mid <- function(midpoint = 1) {
-  function(x, to = c(0, 1), from = range(x, na.rm = TRUE)) {
-    ifelse(x < midpoint,
-           scales::rescale(x, to = c(0, 0.5), from = c(from[1], midpoint)),
-           scales::rescale(x, to = c(0.5, 1), from = c(midpoint, from[2])))
-  }
-}
 
 ## Construct heatmap
 heatmap <- ggplot(to_plot[to_plot$Effect != "Control",], 
@@ -291,10 +278,15 @@ heatmap <- ggplot(to_plot[to_plot$Effect != "Control",],
   coord_fixed() # Ensures the tiles are square
   
 if(log_scale==FALSE){
-  heatmap <- heatmap + scale_fill_gradientn(
-    colours = scico(256, palette = "bam"), # Pulls the "bam" palette colors manually
-    name = "Mean effect (multiplier on \ngrowth in control)",
-    rescaler = rescale_around_mid(midpoint = 1)   # Safely applies your custom compression
+  heatmap <- heatmap + scale_fill_scico( # Map color to treatment effect size
+    palette = 'bam',
+    na.value = 'grey90',
+    name = "Mean effect size",
+    ## Add limits to make sure color bar is centered on 0
+    limits = c(-(max(to_plot$Estimate, na.rm = TRUE)),
+               max(to_plot$Estimate, na.rm = TRUE)),
+    breaks = c(log(0.25), log(0.5), log(1), log(2), log(4)),, # Tells ggplot where to put the tick marks
+    labels = c("0.25", "0.5", "1", "2", "4") # Displays the original unlogged numbers
   ) 
   }else{
     heatmap <- heatmap + scale_fill_scico( # Map color to treatment effect size
