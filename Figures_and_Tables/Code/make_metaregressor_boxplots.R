@@ -51,8 +51,9 @@ for(i in new_colnames){
     rgrs_for_splmnt[[i]] <- signif(rgrs_for_splmnt[[i]], digits = 3)}
 }
 
-# Burn:Thin -> Thin:Burn
+# Burn:Thin -> Thin:Burn; None -> Control
 rgrs_for_splmnt[rgrs_for_splmnt$Treatment=='Burn+Thin', 'Treatment'] = 'Thin+Burn'
+rgrs_for_splmnt[rgrs_for_splmnt$Treatment == 'None', 'Treatment'] = 'Control'
 
 # Make scatterplots (climate variables) -----------------------------------
 
@@ -110,7 +111,7 @@ ggsave(here::here(fig_dir, 'FigS2_soils_boxplots.jpeg'),
        width = 6.5, height = 4, units = 'in', scale = 1)
 
 ggsave(here::here(fig_dir, 'FigS3_rsdi_boxplot.jpeg'), 
-       plot = rsdi, device = 'jpeg', dpi = 'print',
+       plot = rsdi + ylab('Relative stand density \nindex'), device = 'jpeg', dpi = 'print',
        width = 6.5, height = 4, units = 'in', scale = 1)
 
 ggsave(here::here(fig_dir, 'FigS4_intensity_boxplot.jpeg'),
