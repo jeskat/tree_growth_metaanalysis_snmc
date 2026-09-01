@@ -31,20 +31,20 @@ tmax <- rast(
 ppt <- rast(
   here::here('Covariate_and_metaregressor_processing/Input_data/TerraClimate_datafiles/agg_terraclimate_ppt_1958_CurrentYear_GLOBE.nc'))
 
-### Function to shift calendar year to water year 
-### (water year is October - September)
+### Function to shift calendar year to climate year 
+### (climate year is October - September)
 calendar_to_water_yr <- function(ds){ ## input is a dataset
   dte <- time(ds)
   m <- as.numeric(format(dte, "%m"))
   
-  ## October to December are assigned to following water year
+  ## October to December are assigned to following climate year
   i <- (m>=10)
   dte[i] <- dte[i] %m+% years(1)
   time(ds) <- dte
   return(ds)
 }
 
-## Shift calendar year to water year for each climate variable
+## Shift calendar year to climate year for each climate variable
 tmax_h2oyr <- calendar_to_water_yr(tmax)
 ppt_h2oyr <- calendar_to_water_yr(ppt)
 pdsi_h2oyr <- calendar_to_water_yr(pdsi)
@@ -66,7 +66,7 @@ m <- as.numeric(format(dte, "%m"))
 i <- (m %in% winter_months)
 winter_ppt_h2oyr <- ppt_h2oyr[[i]]
 
-## Aggregate monthly data to the water year 
+## Aggregate monthly data to the climate year 
 annual_smr_tmax <- tapp(summer_tmax, 'years', mean, na.rm=TRUE) ## Mean summer maximum temperature
 annual_wnt_ppt <- tapp(winter_ppt_h2oyr, 'years', sum, na.rm=TRUE) ## Winter total precipitation
 annual_cwd <- tapp(cwd_h2oyr, 'years', sum, na.rm=TRUE) ## Annual climate water deficit
