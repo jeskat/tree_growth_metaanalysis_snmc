@@ -172,7 +172,8 @@ print(fig3)
 
 ggsave(here::here(fig_dir, 'Fig3_pooled_effects.tiff'), 
        plot = fig3, device = 'tif', dpi = 600,
-       width = 18, height = 18, units = 'cm')
+       width = 18, height = 18, units = 'cm',
+       bg = 'white')
 
 ###-----------------------------------------------------------------------------
 ### Construct summary tables (Supplementary Tables F1-F3)
