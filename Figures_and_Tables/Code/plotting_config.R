@@ -93,9 +93,10 @@ site_order <- c("Tharp's Creek", 'Sequoia',
 
 ## Fixed effects
 fxdEff <- c('int_overall', 'slope_size', 'log_size', 'd2_size', 'betaCWD', 
-            'treat_mean[Burn]', 'treat_mean[Thin]', 'treat_mean[Burn+Thin]', 
-            'treat_cwd[Burn]', 'treat_cwd[Thin]', 'treat_cwd[Burn+Thin]',
-            'treat_size[Burn]', 'treat_size[Thin]', 'treat_size[Burn+Thin]')
+            'treat_mean[Burn]', 'treat_mean[Thin]', 'treat_mean[Burn+Thin]', 'treat_mean[Thin+Burn]', 
+            'treat_cwd[Burn]', 'treat_cwd[Thin]', 'treat_cwd[Burn+Thin]', 'treat_cwd[Thin+Burn]',
+            'treat_size[Burn]', 'treat_size[Thin]', 'treat_size[Burn+Thin]', 'treat_size[Thin+Burn]'
+            )
 
 ## Random effects
 othrPrms <- c('int_tree_sd', 'int_plot_sd', 'obs_sd', 'res_sd')
@@ -121,12 +122,15 @@ pretty_nms <- list(
   `treat_mean[Burn]` = "$\\gamma_{Burn}$",
   `treat_mean[Thin]` =  "$\\gamma_{Thin}$",
   `treat_mean[Burn+Thin]` = "$\\gamma_{Thin+Burn}$",
+  `treat_mean[Thin+Burn]` = "$\\gamma_{Thin+Burn}$",
   `treat_cwd[Burn]` = "$\\kappa_{Burn}$",
   `treat_cwd[Thin]` =  "$\\kappa_{Thin}$",
   `treat_cwd[Burn+Thin]` = "$\\kappa_{Thin+Burn}$",
+  `treat_cwd[Thin+Burn]` = "$\\kappa_{Thin+Burn}$",
   `treat_size[Burn]` = "$\\nu_{Burn}$",
   `treat_size[Thin]` =  "$\\nu_{Thin}$",
   `treat_size[Burn+Thin]` = "$\\nu_{Thin+Burn}$",
+  `treat_size[Thin+Burn]` = "$\\nu_{Thin+Burn}$",
   BTintrctn = "$\\beta_{intrctn}$",
   Avg_thin = "Average effect of thinning",
   Avg_burn = "Average effect of prescribed burning",
