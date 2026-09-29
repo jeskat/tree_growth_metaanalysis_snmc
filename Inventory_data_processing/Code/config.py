@@ -38,11 +38,13 @@ treat_dict = {
     'uc1':'Thin','uc2':'Thin','uc3':'Thin', 
     'un1':'None', 'un2':'None', 'un3':'None', 
     'us1':'Thin', 'us2':'Thin', 'us3':'Thin', 
-    'bc1':'Burn+Thin','bc2':'Burn+Thin', 'bc3':'Burn+Thin', 
+    # 'bc1':'Burn+Thin','bc2':'Burn+Thin', 'bc3':'Burn+Thin', 
+    'bc1':'Thin+Burn','bc2':'Thin+Burn', 'bc3':'Thin+Burn',
     'bn1':'Burn', 'bn2':'Burn', 'bn3':'Burn', 
-    'bs1':'Burn+Thin', 'bs2':'Burn+Thin', 'bs3':'Burn+Thin',
+    # 'bs1':'Burn+Thin', 'bs2':'Burn+Thin', 'bs3':'Burn+Thin',
+    'bs1':'Thin+Burn', 'bs2':'Thin+Burn', 'bs3':'Thin+Burn',
     # Blodgett
-    'control':'None','burn':'Burn','mechburn':'Burn+Thin','mech':'Thin', 
+    'control':'None','burn':'Burn','mech':'Thin', 'mechburn':'Thin+Burn', #'mechburn':'Burn+Thin',
     # W. Lake Tahoe
     'Control':'None', 'Treated':'Thin', 
     # Tharp's Creek
@@ -50,8 +52,8 @@ treat_dict = {
     # Sequoia
     'FFS2BURN':'Burn', 'FFS5BURN':'Burn', 'FFS6BURN':'Burn', 'FFS7CONTROL':'None',
     # STEF
-    1: 'Burn+Thin',
-    2: 'Burn+Thin',
+    1: 'Thin+Burn', #'Burn+Thin',
+    2: 'Thin+Burn', #'Burn+Thin',
     3: 'Burn',
     4: 'Thin',
     5: 'Thin',
@@ -62,17 +64,17 @@ treat_dict = {
     10: 'Thin',
     11: 'Thin',
     12: 'None',
-    13: 'Burn+Thin',
+    13: 'Thin+Burn', #'Burn+Thin',
     14: 'Burn',
-    15: 'Burn+Thin',
+    15: 'Thin+Burn', #'Burn+Thin',
     16: 'Burn',
-    17: 'Burn+Thin',
-    18: 'Burn+Thin',
+    17: 'Thin+Burn', #'Burn+Thin',
+    18: 'Thin+Burn', #'Burn+Thin',
     19: 'Burn',
     20: 'None',
     21: 'Thin',
-    22: 'Burn+Thin',
-    23: 'Burn+Thin',
+    22: 'Thin+Burn', #'Burn+Thin',
+    23: 'Thin+Burn', #'Burn+Thin',
     24: 'Thin'
 }
 

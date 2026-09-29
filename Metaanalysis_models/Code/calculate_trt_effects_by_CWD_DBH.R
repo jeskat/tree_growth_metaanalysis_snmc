@@ -206,7 +206,7 @@ dbh_and_cwd <- annotate_figure(
 
 ggsave(here::here(fig_dir, 'Fig4_growth_vs_dbh_cwd.tif'), 
        plot = dbh_and_cwd, device = 'tiff', dpi = 600,
-       width = 18, height = 22, units = 'cm')
+       width = 18, height = 22, units = 'cm', bg = 'white')
 
 
 ###-----------------------------------------------------------------------------
@@ -312,5 +312,5 @@ print(heatmap)
 
 ggsave(here::here(fig_dir, 'Fig5_faceted_heatmap.tiff'), 
        plot = heatmap, device = 'tif', dpi = 600,
-       width = 18, height = 22, units = 'cm')
+       width = 18, height = 22, units = 'cm', bg = 'white')
 
