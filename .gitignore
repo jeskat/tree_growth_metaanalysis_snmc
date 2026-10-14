@@ -45,5 +45,14 @@ create_ssm_diagnostics.*
 # Large files
 *TerraClimate_datafiles/
 *SSURGO_datafiles/
-# Powerpoint files
+*Map_input_data/
+*.tif
+*.tiff
+*Fig1_annotated.pdf
+# Powerpoint & pdf files
 *.pptx
+# SSGM input data
+*_private*
+Covariate_and_metaregressor_processing/Input_data/
+# Working files
+*plot_individual_metaregressions.R
