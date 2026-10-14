@@ -55,6 +55,10 @@ plotData$fTreatment <- relevel(plotData$fTreatment, 'None')
 ## Load DBH observations for all trees and then subset to the desired pft
 obs_all <- read.table(here::here(indir, 'dbh_tree_obs.csv'), header = TRUE, 
                       sep = ',', row.names = 'TreeID')
+
+# Remove columns that have no data
+obs_all <- obs_all[, !apply(is.na(obs_all), 2, all)]
+
 obs_pft <- obs_all[row.names(treeData),]
 
 ## Get the constants needed for scaling and centering transformed DBH values
@@ -73,6 +77,9 @@ obs_ln_stdv <- sd(as.matrix(obs_ln), na.rm = TRUE)
 ## Load years corresponding to each dbh observation, and subset to desired pft
 year_obs_all <- read.table(here::here(indir, 'year_tree_obs.csv'), header=TRUE, 
                            sep = ',', row.names = 'TreeID')
+# Remove columns that have no data
+year_obs_all <- year_obs_all[, !apply(is.na(year_obs_all), 2, all)]
+
 year_obs <- year_obs_all[row.names(treeData),]
 
 ### Get initial DBH values for each tree and each year
@@ -80,6 +87,9 @@ year_obs <- year_obs_all[row.names(treeData),]
 if(file.exists(here::here(indir, 'initDBH_tree_year.csv'))){
   sizes_interp_all <- read.table(here::here(indir, 'initDBH_tree_year.csv'), header=TRUE, 
                                  sep = ',', row.names = 'TreeID')
+  # Remove columns that have no data
+  sizes_interp_all <- sizes_interp_all[, !apply(is.na(sizes_interp_all), 2, all)]
+  
 }else{
   ## Otherwise, create initial DBH values from the processed inventory data.
   ## Read full dataframe with inventory years
@@ -170,6 +180,9 @@ for(i in 1:nTree){
 ## Load CWD data and subset for PFT
 cwd <- read.table(here::here(indir, "cwd_tree_year.csv"), header=TRUE, 
                   sep = ',', row.names='TreeID')
+# Remove columns that have no data
+cwd <- cwd[, !apply(is.na(cwd), 2, all)]
+
 cwd_pft <- cwd[row.names(treeData),]
 
 ## Scale CWD values
