@@ -1,0 +1,30 @@
+cff-version: 1.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Katz"
+  given-names: "Jessica R."
+- family-names: "de Valpine"
+  given-names: "Perry"
+- family-names: "Cima"
+  given-names: "Alice"
+- family-names: "Battles"
+  given-names: "John J."
+- family-names: "Das"
+  given-names: "Adrian J."
+- family-names: "Knapp"
+  given-names: "Eric E."
+- family-names: "Low"
+  given-names: "Kathryn E."
+- family-names: "Manley"
+  given-names: "Patricia N."
+- family-names: "North"
+  given-names: "Malcolm P."
+- family-names: "Thornton"
+  given-names: "Polly C."
+- family-names: "Kueppers"
+  given-names: "Lara M."
+title: "Code for: "Thinning more consistently stimulates tree growth than prescribed burning in diverse Sierra Nevada mixed-conifer forests""
+version: 1.0
+doi: 10.5281/zenodo.23377702
+date-released: 2026-10-14
+url: "https://github.com/jeskat/tree_growth_metaanalysis_snmc"
