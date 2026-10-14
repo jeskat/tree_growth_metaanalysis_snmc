@@ -451,7 +451,7 @@ regLine_onePFT <- function(
   ## If the model contains a Burn:Thin:regressor interaction
   if(paste0("BurnBurn:ThinThin:", rgr) %in% out_pft$Treatment){
     ## Subset input data from Burn+Thin units
-    rgr_trt <- pmod$data[pmod$data$Treatment == 'Burn+Thin',] 
+    rgr_trt <- pmod$data[pmod$data$Treatment %in% c('Burn+Thin', 'Thin+Burn'),] 
     
     ## Reconstruct x based on the min and max value of the regressor in the 
     ## Burn+Thin units
