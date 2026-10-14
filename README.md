@@ -1,6 +1,6 @@
 # Meta-analysis of tree growth responses to fuel reduction treatments across Sierra Nevada mixed-conifer forests
 
-This repository contains code used to generate the results, figures, and tables in the article "Thinning more consistently stimulates tree growth than prescribed burning in diverse Sierra Nevada mixed-conifer forests" by Jessica R. Katz, Perry de Valpine, Alice Cima, John J. Battles, Adrian J. Das, Eric E. Knapp, Kathryn E. Low, Patricia N. Manley, Malcolm P. North, Polly C. Thornton, Angela M. White, and Lara M. Kueppers.
+This repository contains code used to generate the results, figures, and tables in the article "Thinning more consistently stimulates tree growth than prescribed burning in diverse Sierra Nevada mixed-conifer forests" by Jessica R. Katz, Perry de Valpine, Alice Cima, John J. Battles, Adrian J. Das, Eric E. Knapp, Kathryn E. Low, Patricia N. Manley, Malcolm P. North, Polly C. Thornton, Angela M. White, and Lara M. Kueppers (in press for *Ecological Applications*).
 
 For any questions, please contact Jessica Katz (jessica_katz@berkeley.edu).
 
@@ -132,7 +132,7 @@ Contains figures and tables included in the manuscript, and code to make supplem
   + `make_composition_barchart.R`: creates Figure S5 (pre-treatment species composition by site).
   + `characterize_PFTs_across_sites.R`: creates Table S1 (number of trees and observations per PFT and site) and Figure S6 (distribution of post-treatment PFT sizes at each site).
   + `make_metaregressor_corrplot.R`: creates Figure S8 (correlation plot of meta-regressors).
-* `Figures/`: contains jpeg objects, with filenames corresponding to Figure numbers in the published article).
+* `Figures/`: contains jpeg objects (main figure .tif files are too large to archive on git), with filenames corresponding to Figure numbers in the published article.
 * `Tables/`: contains csv files, with filenames corresponding to Table numbers in the published article.
   
 
