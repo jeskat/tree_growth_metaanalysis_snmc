@@ -1,3 +1,6 @@
+###---------------------------------------------------------------------------##
+## Makes Figure 1 (map of sites includedin the meta-analysis)  
+###---------------------------------------------------------------------------##
 
 # Data and dependencies ---------------------------------------------------
 
@@ -102,11 +105,13 @@ p <- ggplot() +
           aes(size = `Number of observations`, color = Experiment)) + 
   scale_color_manual(values = unlist(trt_cols)) +
   scale_size_continuous(limits = c(0, 37000), 
-                        breaks = c(100, 1000, 10000))+
-  annotation_scale(location = 'bl') +
+                        breaks = c(100, 1000, 10000),
+                        range = c(0.8, 3.5))+
+  annotation_scale(location = 'bl', text_cex = 0.55) +
   annotation_north_arrow(location = "bl", which_north = "true", 
-                         height = unit(1, 'cm'), width = unit(1, 'cm'), 
-                         pad_y = unit(1, 'cm'), pad_x = unit(0.5, 'cm')) +
+                         height = unit(0.6, 'cm'), width = unit(0.6, 'cm'), 
+                         pad_y = unit(0.75, 'cm'), pad_x = unit(0.3, 'cm'),
+                         style = north_arrow_orienteering(text_size = 6)) +
   labs(color = "Experiment", 
        size = "Number of \nobservations",
        fill= 'Elevation (m)') +
@@ -119,13 +124,18 @@ p <- ggplot() +
   
   theme(panel.background = element_rect(fill = NA, colour = 'NA')) +
   theme(axis.line = element_line(color='gray'),
-        axis.text=element_text(size = 10),
-        axis.title = element_text(size = 12),
-        legend.text = element_text(size=10),
-        legend.title = element_text(size = 12),
+        axis.text=element_text(size = 6.5),
+        axis.title = element_text(size = 8.5),
+        legend.text = element_text(size=6.5),
+        legend.title = element_text(size = 8),
+        legend.key.size = unit(0.35, "cm"),         # Compact legend key sizing
+        legend.spacing.y = unit(0.1, "cm"),
+        legend.margin = margin(0, 0, 0, 0),
+        legend.box.margin = margin(0, 0, 0, 0),
+        plot.margin = margin(t = 6, r = 6, b = 6, l = 6, unit = "pt"),
         panel.grid.minor = element_blank(),
         panel.grid.major = element_blank())
 
 ggsave(here::here(fig_dir, 'Fig1_map.tif'), 
        device = 'tiff', dpi = 600,
-       width = 6.5, height = 4.88, units ='in')
+       width = 8.5, height = 8.5, units ='cm')

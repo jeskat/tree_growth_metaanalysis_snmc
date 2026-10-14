@@ -113,6 +113,7 @@ growthMeta <- ggarrange(cntrlGrowth, trtGrowth,
                         nrow = 1,
                         common.legend = TRUE, legend = 'none',
                         labels = c('A', 'B'),
+                        font.label = list(size = panel_label_size),
                         widths = c(0.55, 1))
 
 ## Panel C
@@ -134,6 +135,7 @@ sizeMeta <- ggarrange(cntrlSize, trtSize,
                       nrow = 1,
                       common.legend = TRUE, legend = 'none',
                       labels = c('C', 'D'),
+                      font.label = list(size = panel_label_size),
                       widths = c(0.55, 1))
 
 ## Panel E
@@ -156,6 +158,7 @@ cwdMeta <- ggarrange(cntrlCWD,
                      nrow = 1,
                      common.legend = TRUE, legend = 'none',
                      labels = c('E', 'F'),
+                     font.label = list(size = panel_label_size),
                      widths = c(0.55, 1))
 
 ## Combine all three rows
@@ -164,10 +167,10 @@ fig3 <- ggarrange(growthMeta, sizeMeta, cwdMeta,
                   common.legend = TRUE, legend = 'bottom', 
                   legend.grob = get_legend(cntrlGrowth))
 
-fig3 <- annotate_figure(
-  fig3,
-  top = text_grob('Figure 3', size = 12)
-)
+# fig3 <- annotate_figure(
+#   fig3,
+#   top = text_grob('Figure 3', size = 12)
+# )
 print(fig3)
 
 ggsave(here::here(fig_dir, 'Fig3_pooled_effects.tiff'), 
@@ -176,7 +179,7 @@ ggsave(here::here(fig_dir, 'Fig3_pooled_effects.tiff'),
        bg = 'white')
 
 ###-----------------------------------------------------------------------------
-### Construct summary tables (Supplementary Tables F1-F3)
+### Construct summary tables (Supplementary Tables S8-S10)
 ###-----------------------------------------------------------------------------
 
 ## Supplementary Table F1: pooled effects of treatment on growth

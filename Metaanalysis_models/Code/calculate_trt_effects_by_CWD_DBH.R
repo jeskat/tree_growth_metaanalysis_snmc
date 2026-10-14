@@ -112,7 +112,7 @@ all_growth_table <- all_growth_outcomes %>%
 
 
 ###-----------------------------------------------------------------------------
-### Make Figure S9 (growth vs. DBH when CWD = 0)
+### Make Figure S10 (growth vs. DBH when CWD = 0)
 ###-----------------------------------------------------------------------------
 
 ## Subset results for CWD = 0
@@ -142,7 +142,7 @@ ggsave(here::here(fig_dir, 'FigS10_growth_vs_dbh.tif'),
 
 
 ###-----------------------------------------------------------------------------
-### Make Figure S10 (growth vs. CWD when DBH = 30 cm)
+### Make Figure S11 (growth vs. CWD when DBH = 30 cm)
 ###-----------------------------------------------------------------------------
 
 ## Subset results for DBH = 30
@@ -197,25 +197,26 @@ dbh_and_cwd <- ggarrange(dbh_plot,
           nrow = 1,
           common.legend = TRUE,
           legend = 'bottom',
-          labels = c('A', 'B'))
+          labels = c('A', 'B'),
+          font.label = list(size = panel_label_size))
 
-dbh_and_cwd <- annotate_figure(
-  dbh_and_cwd,
-  top = text_grob('Figure 4', size = 12)
-)
+# dbh_and_cwd <- annotate_figure(
+#   dbh_and_cwd,
+#   top = text_grob('Figure 4', size = 12)
+# )
 
-ggsave(here::here(fig_dir, 'Fig4_growth_vs_dbh_cwd.tif'), 
+ggsave(here::here(fig_dir, 'Fig4_growth_vs_dbh_cwd_frmt.tif'), 
        plot = dbh_and_cwd, device = 'tiff', dpi = 600,
-       width = 18, height = 22, units = 'cm', bg = 'white')
+       width = 18, height = 16, units = 'cm', bg = 'white')
 
 
 ###-----------------------------------------------------------------------------
-### Make Figure 5 (facetted heatmap showing treatment effects for each DBH-CWD 
+### Make Figure 5 (faceted heatmap showing treatment effects for each DBH-CWD 
 ### combination.
 ###-----------------------------------------------------------------------------
 
 ## Set flag for using log or unlogged scale
-log_scale = TRUE
+log_scale = FALSE
 
 ## Set significance thresholds
 all_dbh_cwd_pvals[signif(all_dbh_cwd_pvals$pval, 2) <= 0.05, 'plot_pval'] = "Clear (p <= 0.05)"
@@ -268,8 +269,14 @@ heatmap <- ggplot(to_plot[to_plot$Effect != "Control",],
     y = "DBH (cm)",
     x = "pCWD (standard deviations \nfrom site mean)"
   ) +
-  theme_minimal(base_size = 14) + # A clean theme for the plot
+  theme_minimal() + # A clean theme for the plot
   theme(axis.line = element_line(color='black'),
+        axis.text=element_text(size = axis_text_size),
+        axis.title = element_text(size = axis_title_size),
+        legend.text = element_text(size=legend_text_size),
+        legend.title = element_text(size = legend_title_size),
+        plot.subtitle = element_text(size = subtitle_title_size),
+        strip.text = element_text(size = subtitle_title_size),
         panel.grid.minor = element_blank(),
         panel.grid.major = element_blank(),
         legend.position = 'right',
@@ -304,10 +311,10 @@ if(log_scale==FALSE){
 heatmap = heatmap + facet_grid(PFT~factor(Effect, 
                                           levels = c('Burn', 'Thin', 'Thin:Burn\n Interaction')))
 
-heatmap <- annotate_figure(
-  heatmap,
-  top = text_grob('Figure 5', size = 12)
-)
+# heatmap <- annotate_figure(
+#   heatmap,
+#   top = text_grob('Figure 5', size = 12)
+# )
 print(heatmap)
 
 ggsave(here::here(fig_dir, 'Fig5_faceted_heatmap.tiff'), 

@@ -1,5 +1,14 @@
 ### This file provides mappings for plotting styles and nomenclatures
 
+## Figure sizing
+axis_text_size <- 6.5
+axis_title_size <- 8.5
+legend_text_size <- 6.5
+legend_title_size <- 8
+subtitle_title_size <- 9
+panel_label_size <- 10
+
+
 ## List of sites included in analysis
 site_list <- c('Blodgett', 'LaTour', 'Sequoia', 'STEF', 
   'Teakettle', 'TharpsCreek', 'WLakeTahoe')

@@ -377,7 +377,7 @@ ggsave(here::here(fig_dir, 'FigS18_mtrgr_intensity.jpeg'),
        width = 6.5, height = 8, units = 'in')
 
 
-# Make summary table ------------------------------------------------------
+# Make summary table (Table 2) ------------------------------------------------------
 
 ## Concatenate metaregression summaries
 log_scale <- FALSE

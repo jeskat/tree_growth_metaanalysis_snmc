@@ -128,8 +128,14 @@ plot_meta_analysis <- function(effects_summary, # This is the first output of `m
     ylab(axis_label) +
     
     # Styling
-    coord_flip() + theme_minimal(base_size = 12) +
+    coord_flip()  + theme_minimal() +
     theme(axis.line = element_line(color='black'), 
+          axis.text=element_text(size = axis_text_size),
+          axis.title = element_text(size = axis_title_size),
+          legend.text = element_text(size=legend_text_size),
+          legend.title = element_text(size = legend_title_size),
+          plot.subtitle = element_text(size = subtitle_title_size),
+          strip.text = element_text(size = subtitle_title_size),
           panel.grid.minor = element_blank(),
           panel.grid.major = element_blank(),
           legend.position = 'bottom')
@@ -316,8 +322,14 @@ plot_growth_by_xVar <- function(
     scale_x_continuous(breaks = x_subset) + 
     
     # Styling
-    theme_minimal(base_size = 14) +
+    theme_minimal() +
     theme(axis.line = element_line(color='black'),
+          axis.text=element_text(size = axis_text_size),
+          axis.title = element_text(size = axis_title_size),
+          legend.text = element_text(size=legend_text_size),
+          legend.title = element_text(size = legend_title_size),
+          plot.subtitle = element_text(size = subtitle_title_size),
+          strip.text = element_text(size = subtitle_title_size),
           panel.grid.minor = element_blank(),
           panel.grid.major = element_blank(),
           legend.position = 'bottom')
