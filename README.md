@@ -1,11 +1,8 @@
 # Meta-analysis of tree growth responses to fuel reduction treatments across Sierra Nevada mixed-conifer forests
 
-This repository contains code used to generate the results, figures, and tables in the article "Tree growth varies with fuel treatment type, tree size, and climate in Sierra Nevada mixed conifer forests" by Jessica R. Katz, Perry de Valpine, Alice Cima, John J. Battles, Adrian J. Das, Eric E. Knapp, Kathryn E. Low, Patricia N. Manley, Malcolm P. North, Polly C. Thornton, Angela M. White, and Lara M. Kueppers.
+This repository contains code used to generate the results, figures, and tables in the article "Thinning more consistently stimulates tree growth than prescribed burning in diverse Sierra Nevada mixed-conifer forests" by Jessica R. Katz, Perry de Valpine, Alice Cima, John J. Battles, Adrian J. Das, Eric E. Knapp, Kathryn E. Low, Patricia N. Manley, Malcolm P. North, Polly C. Thornton, Angela M. White, and Lara M. Kueppers.
 
 For any questions, please contact Jessica Katz (jessica_katz@berkeley.edu).
-
-## Citation
-[Placeholder]
 
 ## Overview
 In this study, we compiled and analyzed data from seven field experiments and continuous forest inventories to synthesize tree growth responses to mechanical thinning and prescribed burning across the geographically- and climatically-diverse Sierra Nevada mixed-conifer (SNMC) forests of California. The full analysis consists of multiple components, each represented by a folder in this repository: 1) processing forest inventory data; 2) processing covariate and meta-regressor data; 3) estimating 19 state-space growth models (SSGMs), each model specific to a unique combination of plant functional type [PFT] and site; 4) using mixed-effects meta-analysis and meta-regression to estimate pooled effects across sites; and 5) producing figures and tables for the publication. 
@@ -20,26 +17,27 @@ The seven sites included in this analysis include:
 * "Tharp's Creek:" A prescribed fire study located in the Tharp’s Creek and Log’s Creek watersheds of Sequoia National Park (Mutch and Parsons 1998); and 
 * “W. Lake Tahoe:” A thinning study located in West Lake Tahoe (Low et al. 2021).
 
-The figure below illustrates the main components of this repository and the general workflow. For a detailed description of the study and methods, see Katz et al. ([placeholder]). Due to the large size of the Markov chain Monte Carlo outputs of the SSGMs, we do not include these outputs in the repository. However, they can be reproduced by running the code within the "State_space_growth_models" folder.   
+The figure below illustrates the main components of this repository and the general workflow. Due to the large size of the Markov chain Monte Carlo outputs of the SSGMs, we do not include these outputs in the repository. However, they can be reproduced by running the code within the "State_space_growth_models" folder.   
 
 
 ![Overview of analysis workflow. Folders are represented by boxes; those containing data files (no code) have a tab in the lower right corner. The purple dashed box denotes the contents of this repository; items outside of the dashed box are external to this repository.](code_workflow.png)
 
 ### Forest inventory data availability
-All site-level forest inventory data files needed to run the SSGMs are saved in the `State_space_growth_models/Input_data` directory. We processed these data files from raw forest inventory data for each field site. Raw inventory data are publicly available for Blodgett at [Stephens et al. 2025](https://doi.org/10.6073/pasta/06a3a2556f5289b89b9f8683becfe08e) and for Sequoia and Tharp's Creek at [Das 2026](https://doi.org/10.5066/P1MHZKJY). For the four other sites, the raw data are not available publicly but can be requested from the authors. As an example of our data pre-processing procedure, we provide the code needed to convert the Blodgett, Sequoia, and Tharp's Creek inventory data to SSGM inputs in the `Inventory_data_processing/` directory of this repository. Data pre-processing for the other sites followed a very similar procedure, with minor changes to reflect the unique structure of each raw dataset. 
+Raw inventory data are publicly available for Blodgett at [Stephens et al. 2025](https://doi.org/10.6073/pasta/06a3a2556f5289b89b9f8683becfe08e) and for Sequoia and Tharp's Creek at [Das 2026](https://doi.org/10.5066/P1MHZKJY). We provide the code needed to convert the Blodgett, Sequoia, and Tharp's Creek inventory data to SSGM inputs in the `Inventory_data_processing/` directory of this repository. 
+
+For LaTour, STEF, Teakettle, and W. Lake Tahoe, the pre-processed, SSGM-ready inventory data are available at [Katz et al. 2026](https://doi.org/10.6073/pasta/5a08b3763f969b0aadc762bdbc60c79b). 
 
 ## Contents
 ### Inventory_data_processing
-Contains code for processing raw inventory data to create the inputs needed to run the SSGMs. Key processes include: data cleaning (removing duplicated, null, and filled records; harmonizing tree species and life status across each tree’s remeasurements; and correcting typos); removing trees with less than two post-treatment diameter at breast height (DBH) measurements; removing trees with DBH < 15cm; removing remeasurements on dead trees; removing remeasurements associated with growth outliers; and formatting data tables for SSGM ingestion. 
-
-We provide processing scripts only for sites with permanently archived inventory data (i.e., Blodgett, Sequoia, and Tharp's Creek).
-
+Contains code for processing inventory data downloaded from published data archives to create the inputs needed to run the SSGMs. Key processes include: data cleaning (removing duplicated, null, and filled records; harmonizing tree species and life status across each tree’s remeasurements; and correcting typos); removing trees with less than two post-treatment diameter at breast height (DBH) measurements; removing trees with DBH < 15cm; removing remeasurements on dead trees; removing remeasurements associated with growth outliers; and formatting data tables for SSGM ingestion. 
 
 * `Code/`
   + `config.py`: provides values and list-style mappings to enable consistent data processing (e.g., consistent treatment naming conventions and minimum diameter thresholds) across all sites. 
   + `inventory_processing_functions.py`: provides all common functions needed to process inventory data for each site. These functions are called in `process_inventory_data_[site].ipynb` and `get_standStructure_[site].ipynb` notebooks.
   + `process_inventory_data_Blodgett.ipynb`: pipeline for processing raw inventory data [(Stephens et al. 2025)](https://doi.org/10.6073/pasta/06a3a2556f5289b89b9f8683becfe08e) and producing SSGM input data for Blodgett. Saves processed data to `State_space_growth_models/Input_data/Blodgett/`.
   + `process_inventory_data_Sequoia_Tharp.ipynb`: pipeline for processing raw inventory data [Das 2026](https://doi.org/10.5066/P1MHZKJY) and producing SSGM input data for Sequoia and Tharp's Creek. Notebook must be run separately for each site, specifying "Sequoia" or "TharpsCreek" in cell 2. Saves processed data to `State_space_growth_models/Input_data/Sequoia/` or `State_space_growth_models/Input_data/TharpsCreek/`. 
+  + `download_processed_data_fourSites.R`: downloads pre-processed datafiles for LaTour, STEF, Teakettle, and W. Lake Tahoe from the Environmental Data Initiative portal [Katz et al. 2026](https://doi.org/10.6073/pasta/5a08b3763f969b0aadc762bdbc60c79b). User should provide their own EDI access key.
+  + `process_LaTour_STEF_Teakettle_WLakeTahoe.R`: sources `download_processed_data_fourSites.R`, creates new directories for each site in `State_space_growth_models/Input_data/`, and parses and saves site-specific data in the appropriate folder.
   
 ### Covariate_and_metaregressor_processing
 Contains code for processing the climatic water deficit (CWD) covariate in the SSGMs, along with the mean climate, soil, and stand structure variables that are used in the meta-regressions. 
@@ -79,7 +77,7 @@ Contains the code needed to run site- and PFT-specific SSGMs (in parallel if nee
     - `model.list`: list of models (e.g., ddbh_model, corresponding to one or more file names within `State_space_growth_models/Code/nimble_models`) for which to run SSGMs. 
     - `config_c1.R` and `config_c2.R`: R scripts with lists that configure each SSGM for the first ("c1") and second ("c2") MCMC chains. Users may manually edit the MCMC thinning interval and number of iterations for each site- and PFT-specific SSGM. 
   + `nimble_models`: contains different SSGM formulations using the nimble package.
-    - `ddbh_model.R`: default state-space model for tree growth (corresponds to Equations 1-4 in Katz et al. (placeholder)).
+    - `ddbh_model.R`: default state-space model for tree growth (corresponds to Equations 1-4 in main article).
     - `ddbh_model_TreePrior.R`: modification of `ddbh_model.R` to set an informative prior for the standard deviation on the tree random effect. Used only for the W. Lake Tahoe SSGMs.
     - `ddbh_model_UnitPrior.R`: modification of `ddbh_model.R` to set an informative prior for the standard deviation on the unit (plot) random effect. Used only for the Sequoia and Tharp's Creek SSGMs.
   + `ssm_config.R`: defines file paths for inputs and outputs of SSGMs. New users should specify the directory in which the MCMC outputs of the SSGMs should be saved.
@@ -93,7 +91,7 @@ Contains the code needed to run site- and PFT-specific SSGMs (in parallel if nee
   + `batch_convergence_diagnostics.R`: loops through all SSGMs in the list of completed models (e.g., `State_space_growth_model_Outputs/authors_complete_models.RData`) and compiles Gelman-Rubin statistics for all parameters. Output saved in `State_space_growth_models/Outputs/Final_SSM_diagnostics/all_gr_diagnostics.csv`. 
   + `make_convergence_diagnostic_table.R`: reads the csv produced by `batch_convergence_diagnostics.R` and creates a summary table of Gelman-Rubin statistics (Table S5). 
   + `compile_ssm_params.R`: loops through all  SSGMs in the list of completed models (e.g., `State_space_growth_model_Outputs/authors_complete_models.RData`) and compiles the final parameter estimates into one dataframe, saved as `State_space_growth_model_Outputs/allParams_[date].csv`.
-  + `summarize_parameter_estimates`: reads the csv produced by `compile_ssm_params.R` and creates Tables S6-S7 and Figure S8, summarizing parameter estimates from each SSGM.
+  + `summarize_parameter_estimates`: reads the csv produced by `compile_ssm_params.R` and creates Tables S6-S7 and Figure S9, summarizing parameter estimates from each SSGM.
 * `Outputs/`: 
   + `allParams_2025-12-02.csv`: tabular output of `compile_ssm_params.R`, summarizing parameter estimates for each site- and PFT-specific SSGM.
   + `authors_complete_models.RData`: R data object containing the final list of models (specified by site, PFT, and nimble model name), along with burn-in values. Users should create their own version of this object for new analyses.
@@ -101,7 +99,7 @@ Contains the code needed to run site- and PFT-specific SSGMs (in parallel if nee
   + `runs_to_concatenate_template.R`: R script providing a template to create a new, blank version of `runs_to_concatenate_c*.RData` at the beginning of a new project.
   + `Final_SSM_diagnostics/`:
     - `all_gr_diagnostics.csv`: tabular output of `batch_convergence_diagnostics.R`, containing the Gelman-Rubin statistics for each parameter of each site- and PFT-specific SSGM. 
-    - `[site]_[pft]_[chain].html`: each html file (produced by `create_ssm_diagnostics.R`) contains MCMC diagnostic figures and tables for a SSGM for a given combination of site and PFT (specified in the filename). The chain specified in the filename corresponds to the chain from which results in Katz et al. (placeholder) were reported. 
+    - `[site]_[pft]_[chain].html`: each html file (produced by `create_ssm_diagnostics.R`) contains MCMC diagnostic figures and tables for a SSGM for a given combination of site and PFT (specified in the filename). The chain specified in the filename corresponds to the chain from which results in the published article were reported. 
   
 ## Metaanalysis_models
 Contains the code needed to post-process outputs of the SSGMs and estimate all meta-analysis and meta-regression models.
@@ -111,9 +109,9 @@ Contains the code needed to post-process outputs of the SSGMs and estimate all m
   + `metaanalysis_functions.R`: suite of functions that are used to run meta-analyses and meta-regressions.
   + `postprocess_fixed_effects.R`: loops through all  SSGMs in the list of completed models (e.g., `State_space_growth_model_Outputs/authors_complete_models.RData`) and reparameterizes the posterior distributions for DBH = 30 cm and CWD = 0. Outputs unit-level estimates of growth (`Metaanalysis_models/Reparameterized_SSM_outputs/unit_growth_effects_by_trt_*.csv`); site-level parameter estimates for the log(DBH) and CWD effects under each treatment (`Metaanalysis_models/Reparameterized_SSM_outputs/fixed_effects_by_trt_*.csv`); and the variance-covariance matrices for each of these outputs (*.RData files). 
   + `postprocess_unit_growth_CWD_DBH.R`: loops through all  SSGMs in the list of completed models (e.g., `State_space_growth_model_Outputs/authors_complete_models.RData`), a list of DBH values, and a list of CWD values, and reparameterizes the SSGM posterior distributions for each combination of DBH and CWD. Outputs `Metaanalysis_models/Reparameterized_SSM_outputs/growthOutcomesByCWDandDBH*`, including growth outcomes by treatment (.csv file) and variance-covariance matrices (.RData file).
-  + `get_pooled_effects.R`: takes in the outputs of `postprocess_fixed_effects.R`. Runs meta-analyses and makes Figure 2 and Supplementary Tables S8-S10 (pooled effects of treatment, tree size, measurement period CWD, and their interactions on tree growth). 
-  + `calculate_trt_effects_by_CWD_DBH.R`: takes in the outputs of `postprocess_unit_growth_CWD_DBH.R` and runs meta-analyses of treatment effects on growth for different combinations of PFT, DBH, and CWD. Makes Figures 3, 4, and 5.
-  + `run_metaregressions.R`: runs meta-regressions for mean climate, soil, and stand structure variables. Makes Table 2, Figures S9-S15, and Tables S11-21. 
+  + `get_pooled_effects.R`: takes in the outputs of `postprocess_fixed_effects.R`. Runs meta-analyses and makes Figure 3 and Supplementary Tables S8-S10 (pooled effects of treatment, tree size, measurement period CWD, and their interactions on tree growth). 
+  + `calculate_trt_effects_by_CWD_DBH.R`: takes in the outputs of `postprocess_unit_growth_CWD_DBH.R` and runs meta-analyses of treatment effects on growth for different combinations of PFT, DBH, and CWD. Makes Figures 4, 5, S10, and S11.
+  + `run_metaregressions.R`: runs meta-regressions for mean climate, soil, and stand structure variables. Makes Table 2, Figures S12-S18, and Tables S11-21. 
 * `Reparameterized_SSM_outputs/`:
   + `unit_growth_effects_by_trt_2025-12-09.csv`: tabular output of `postprocess_fixed_effects.R`, containing estimates of growth in each treatment unit based on SSGM posterior distributions re-parameterized for DBH = 30 and CWD = 0.
   + `cov_unit_growth_by_trt_2025-12-09.RData`: R data object output of `postprocess_fixed_effects.R`, containing variance-covariance matrices for growth in each treatment unit based on SSGM posterior distributions re-parameterized for DBH = 30 and CWD = 0.
@@ -130,16 +128,18 @@ Contains figures and tables included in the manuscript, and code to make supplem
   + `plotting_config.R`: specifies values used in creating tables and graphics, including colors, styles, ordering, and naming conventions.
   + `plotting_functions.R`: suite of functions used specifically for making figures and tables.
   + `make_site_map.R`: creates Figure 1 (map of study sites).
-  + `make_metaregressor_boxplots.R`: creates Figures S1-S3 (scatterplots and boxplots of meta-regressors).
-  + `make_composition_barchart.R`: creates Figure S4 (pre-treatment species composition by site).
-  + `characterize_PFTs_across_sites.R`: creates Table S1 (number of trees and observations per PFT and site) and Figure S5 (distribution of post-treatment PFT sizes at each site).
-  + `make_metaregressor_corrplot.R`: creates Figure S7 (correlation plot of meta-regressors).
-* `Figures/`: contains jpeg objects, with filenames corresponding to Figure numbers in Katz et al. (placeholder).
-* `Tables/`: contains csv files, with filenames corresponding to Table numbers in Katz et al. (placeholder).
+  + `make_metaregressor_boxplots.R`: creates Figures S1-S4 (scatterplots and boxplots of meta-regressors).
+  + `make_composition_barchart.R`: creates Figure S5 (pre-treatment species composition by site).
+  + `characterize_PFTs_across_sites.R`: creates Table S1 (number of trees and observations per PFT and site) and Figure S6 (distribution of post-treatment PFT sizes at each site).
+  + `make_metaregressor_corrplot.R`: creates Figure S8 (correlation plot of meta-regressors).
+* `Figures/`: contains jpeg objects, with filenames corresponding to Figure numbers in the published article).
+* `Tables/`: contains csv files, with filenames corresponding to Table numbers in the published article.
   
 
 ## References
 Das, A.J. 2026. Sequoia National Park tree growth data for thinning and burning study: U.S. Geological Survey data release. https://doi.org/10.5066/P1MHZKJY.
+
+Katz, J.R., E.E. Knapp, K. Low, P.N. Manley, M. North, A.M. White, and L.M. Kueppers. 2026. Data for estimating the effects of fuel reduction treatments on tree growth at four study sites in Sierra Nevada mixed-conifer forests, California ver 1. Environmental Data Initiative. https://doi.org/10.6073/pasta/5a08b3763f969b0aadc762bdbc60c79b.
 
 Knapp, E. E., J. E. Keeley, E. A. Ballenger, and T. J. Brennan. 2005. “Fuel Reduction and Coarse Woody Debris Dynamics with Early Season and Late Season Prescribed Fire in a Sierra Nevada Mixed Conifer Forest.” Forest Ecology and Management 208 (1): 383–97. https://doi.org/10.1016/j.foreco.2005.01.016.
 
